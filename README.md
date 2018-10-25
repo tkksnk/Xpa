@@ -1,9 +1,9 @@
-## Xpa
+# Xpa
 Programming code for "Applying the Explicit Aggregation Algorithm to Heterogeneous Macro Models"
 
 October 2018 by Takeki Sunakawa
 
-# How to use
+## How to use
 
 The code is intended to be compiled by Intel Fortran with Math Kernel Library. In Linux, the code can be compiled and run by
 ```
@@ -19,7 +19,7 @@ for the Xpa algorithm.
 
 The results are saved in .json format. Matlab (>R2016b) is needed to display the results.
 
-# Prerequests
+## Prerequests
 
 You need to install
 
