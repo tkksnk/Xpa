@@ -2,7 +2,7 @@
 
 October 2018
 
-Takeki Sunakawa
+Takeki Sunakawa (takeki.sunakawa@gmail.com)
 
 ## How to use
 
@@ -18,7 +18,7 @@ $ ./solveXpa
 ```
 for the Xpa algorithm. The results in Fortran are saved in .json format and Matlab (>=R2016b) is needed to visualize them. Figures and Tables are displayed by running aggresults.m in each KT and KMP folder.
 
-## Prerequests
+## Required libraries
 
 You need to install
 
