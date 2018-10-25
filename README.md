@@ -22,7 +22,7 @@ You need to install
 
 - json-fortran https://github.com/jacobwilliams/json-fortran
 
-If you use the sparse-grid eigenvalue and eigenvector decomposition to calculate the stationary distribution, you also need
+If you want to use the sparse-grid eigenvalue and eigenvector decomposition to calculate the stationary distribution, you also need
 
 - arpack-ng https://github.com/opencollab/arpack-ng
 
