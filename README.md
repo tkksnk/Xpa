@@ -6,7 +6,7 @@ Takeki Sunakawa
 
 ## How to use
 
-The folder KT is for Khan-Thomas models and the folder KMP is for Krueger-Mitman-Perri models. The code is intended to be compiled by Intel Fortran with Math Kernel Library. In Linux, the code can be compiled and run by
+The folder `KT` is for Khan-Thomas models and the folder `KMP` is for Krueger-Mitman-Perri models. The code is intended to be compiled by Intel Fortran with Math Kernel Library. In Linux, the code can be compiled and run by
 ```
 $ make solveKS
 $ ./solveKS
