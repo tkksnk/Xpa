@@ -1,4 +1,7 @@
 # Makefile
+# TODO, Oct 25 2018: 1. remove include and -fpp (MATLAB related commands),
+# 2. integrate calcirf into solve,
+# 3. implement spblas in calcss
 FC = ifort
 FFLAGS = -O3 -qopenmp -fpp
 LAPACK = -mkl
