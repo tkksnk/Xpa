@@ -3,8 +3,8 @@
     integer, parameter :: maxiter = 2000
     integer, parameter :: diagnum = 200
     integer, parameter :: diagnumout = 500
-    ! character(len=*), parameter :: jsonfilename = './results_calibKS_Reiter.json'
-    character(len=*), parameter :: jsonfilename = './results_calibKMPbenchmark_Reiter.json'
+    character(len=*), parameter :: jsonfilename = './results_calibKS_KS.json'
+    ! character(len=*), parameter :: jsonfilename = './results_calibKMPbenchmark_Reiter.json'
     logical, parameter :: jsonoutput = .true.
 
     logical, parameter :: nraflag = .true.
@@ -20,7 +20,7 @@
     integer, parameter :: congrid = 0
     real(8), parameter :: deggrid = 4.0d0
     real(8), parameter :: damp = 0.35d0 !0.35d0 ! for new: better convergence than 0.4
-    real(8), parameter :: dampss = 0.005d0 !0.05d0 !0.005d0 ! for iterative method
+    real(8), parameter :: dampss = 0.001d0 !0.05d0 !0.005d0 ! for iterative method
     integer, parameter :: simT = 2000
     integer, parameter :: drop = 500
     integer, parameter :: simTT = simT+drop
