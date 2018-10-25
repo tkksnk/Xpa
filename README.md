@@ -1,6 +1,6 @@
 # Programming code for "Applying the Explicit Aggregation Algorithm to Heterogeneous Macro Models"
 
-October 2018 by Takeki Sunakawa (takeki.sunakawa@gmail.com)
+by Takeki Sunakawa (takeki.sunakawa@gmail.com), October 2018
 
 ## How to use
 
