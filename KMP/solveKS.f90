@@ -69,21 +69,21 @@ program solveXpa
     ! Gd = 0.96d0
     ! Pd = 1.0d0
     ! KS 1998: no tax for unemployed
-    Gez(1,1) = mu
-    Gez(2,1) = h*(1.0d0-taug)
-    Gez(1,2) = mu
-    Gez(2,2) = h*(1.0d0-taub)
-    call calcPeKS(pgg,pbb,ug,ub,DurationUg,DurationUb,corr,Pez)
-    Gy = 1.0d0
-    Py = 1.0d0
-    Gd = 0.989975d0
-    Pd = 1.0d0
-    ! ! KMP: tax for both
-    ! Gez(1,1) = mu*(1.0d0-taug)
+    ! Gez(1,1) = mu
     ! Gez(2,1) = h*(1.0d0-taug)
-    ! Gez(1,2) = mu*(1.0d0-taub)
+    ! Gez(1,2) = mu
     ! Gez(2,2) = h*(1.0d0-taub)
-    ! call calcPeKMP(pgg,pbb,pgg00,pgg10,pgb00,pgb10,pbg00,pbg10,pbb00,pbb10,rhoy,sigy,dbar,deps,Pez,Gy,Py,Gd,Pd)
+    ! call calcPeKS(pgg,pbb,ug,ub,DurationUg,DurationUb,corr,Pez)
+    ! Gy = 1.0d0
+    ! Py = 1.0d0
+    ! Gd = 0.989975d0
+    ! Pd = 1.0d0
+    ! KMP: tax for both
+    Gez(1,1) = mu*(1.0d0-taug)
+    Gez(2,1) = h*(1.0d0-taug)
+    Gez(1,2) = mu*(1.0d0-taub)
+    Gez(2,2) = h*(1.0d0-taub)
+    call calcPeKMP(pgg,pbb,pgg00,pgg10,pgb00,pgb10,pbg00,pbg10,pbb00,pbb10,rhoy,sigy,dbar,deps,Pez,Gy,Py,Gd,Pd)
 
     ! index for exogenous grid
     do id = 1,nd

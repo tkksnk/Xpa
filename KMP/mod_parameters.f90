@@ -3,14 +3,14 @@
     integer, parameter :: maxiter = 2000
     integer, parameter :: diagnum = 200
     integer, parameter :: diagnumout = 500
-    character(len=*), parameter :: jsonfilename = './results_calibKS_Reiter.json'
-    ! character(len=*), parameter :: jsonfilename = './results_calibKMPbenchmark_Reiter.json'
+    ! character(len=*), parameter :: jsonfilename = './results_calibKS_Reiter.json'
+    character(len=*), parameter :: jsonfilename = './results_calibKMPbenchmark_Reiter.json'
     logical, parameter :: jsonoutput = .true.
 
     logical, parameter :: nraflag = .true.
     ! NOTE: 180801: linflag=1 and spliflag=1 doesn't work???
     logical, parameter :: linflag = .false.
-    logical, parameter :: spliflag = .true. !.false.
+    logical, parameter :: spliflag = .false.
     ! logical, parameter :: bisectm = .true.
     logical, parameter :: bisectm = .false.
     integer, parameter :: transmat = 1
@@ -28,7 +28,7 @@
     integer, parameter :: irfdrop = 2000
     integer, parameter :: irfTT = irfT+irfdrop
 
-    integer, parameter :: nk = 25 !51 !101 !51 !25
+    integer, parameter :: nk = 101 !51 !25
     integer, parameter :: nm = 5
     integer, parameter :: nz = 2
     integer, parameter :: ne = 2
@@ -40,7 +40,7 @@
     ! real(8), parameter :: kmax = 700.0d0 ! hety
     ! real(8), parameter :: kmax = 2000.0d0 ! bench
     integer, parameter :: nx = ne*ny*nd
-    integer, parameter :: nb = 51 !201 !2001 ! NOTE: with KS calibration, kmax=200 and nb=5000 yields very different distribution
+    integer, parameter :: nb = 2001 ! NOTE: with KS calibration, kmax=200 and nb=5000 yields very different distribution
     integer, parameter :: rk = nk-2
     integer, parameter :: rm = nm-2
 
