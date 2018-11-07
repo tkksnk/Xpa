@@ -2,7 +2,7 @@
 
     integer, parameter :: diagnum = 200 ! for ss and inner loop
     integer, parameter :: diagnumout = 500 ! for outer loop
-    character(len=*), parameter :: jsonfilename = './results_extend_KS.json'
+    character(len=*), parameter :: jsonfilename = './results_extend_Xpa.json'
     logical, parameter :: jsonoutput = .true.
 
     logical, parameter :: nraflag = .false. ! NOTE: in the inner loop, nra sometime doesn't work... in planner, nra doesn't work

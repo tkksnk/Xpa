@@ -3,24 +3,20 @@
 clear all;
 
 % parameters
-% jsonKS = jsondecode(fileread('./results_extend_KS.json'));
-% jsonXpa = jsondecode(fileread('./results_extend_Xpa.json'));
-jsonKS = jsondecode(fileread('./results_traditional_KS.json'));
-jsonXpa = jsondecode(fileread('./results_traditional_Xpa.json'));
+jsonKS = jsondecode(fileread('./results_extend_KS.json'));
+jsonXpa = jsondecode(fileread('./results_extend_Xpa.json'));
+% jsonKS = jsondecode(fileread('./results_traditional_KS.json'));
+% jsonXpa = jsondecode(fileread('./results_traditional_Xpa.json'));
 drop = 500;
 simT = 2000;
 simTT = drop+simT;
 irfdrop = 200;
 irfT = 50;
 irfTT = irfdrop+irfT;
-nm = size(jsonXpa.input.knotsm,1); %5;
+nm = size(jsonXpa.input.knotsm,1);
 nz = size(jsonXpa.input.Gz,1);
-GAMY = jsonXpa.input.param(1); %1.016;
-DELTA = jsonXpa.input.param(3); %0.069;
-% dirKS = './results/extended/KS/';
-% dirXpa = './results/extended/Xpaadj/';
-% dirKS = './results/traditional/KS/';
-% dirXpa = './results/traditional/Xpanoadj/';
+GAMY = jsonXpa.input.param(1);
+DELTA = jsonXpa.input.param(3);
 fitflag = 0;
 priflag = 1;
 
@@ -99,7 +95,6 @@ xticklabels([1 10 20 30 40 50]);
 % if (priflag); print -depsc2 simall_trad.eps; end;
 
 izvec = jsonXpa.input.izvec;
-% eval(['load ' dirXpa 'izvec.txt;']);
 izvec = izvec(drop+1:simT+drop);
 
 for iz = 1:nz
@@ -200,66 +195,6 @@ xticklabels([0 5 10 15 20]);
 
 %if (priflag); print -depsc2 irfall_extend.eps; end;
 % if (priflag); print -depsc2 irfall_trad.eps; end;
-% 
-% figure;
-% subplot(231);
-% plot(time,ikirvecXpa(time,2),'b-o');
-% %plot(time,100*log(ikirvecXpa(time,2)/ikirvecXpa(end,2)),'b-o');
-% hold on;
-% plot(time,ikirvecKS(time,2),'k-x');
-% %plot(time,100*log(ikirvecKS(time,2)/ikirvecKS(end,2)),'k-x');
-% %plot([st ed],[0 0],'k-');
-% title('Stddev');
-% xlim([time(1) time(end)]);
-% xticks([0 5 10 15 20]+(st+1)); % st is set to -1
-% xticklabels([0 5 10 15 20]);
-% subplot(234);
-% plot(time,ikirvecXpa(time,3),'b-o');
-% %plot(time,100*log(ikirvecXpa(time,3)/ikirvecXpa(end,3)),'b-o');
-% hold on;
-% plot(time,ikirvecKS(time,3),'k-x');
-% %plot(time,100*log(ikirvecKS(time,3)/ikirvecKS(end,3)),'k-x');
-% %plot([st ed],[0 0],'k-');
-% title('Inaction');
-% xlim([time(1) time(end)]);
-% xticks([0 5 10 15 20]+(st+1)); % st is set to -1
-% xticklabels([0 5 10 15 20]);
-% subplot(232);
-% plot(time,ikirvecXpa(time,4),'b-o');
-% hold on;
-% plot(time,ikirvecKS(time,4),'k-x');
-% %plot([st ed],[0 0],'k-');
-% xlim([time(1) time(end)]);
-% xticks([0 5 10 15 20]+(st+1)); % st is set to -1
-% xticklabels([0 5 10 15 20]);
-% title('Spike+');
-% subplot(233);
-% plot(time,ikirvecXpa(time,5),'b-o');
-% hold on;
-% plot(time,ikirvecKS(time,5),'k-x');
-% %plot([st ed],[0 0],'k-');
-% title('Spike-');
-% xlim([time(1) time(end)]);
-% xticks([0 5 10 15 20]+(st+1)); % st is set to -1
-% xticklabels([0 5 10 15 20]);
-% subplot(235);
-% plot(time,ikirvecXpa(time,6),'b-o');
-% hold on;
-% plot(time,ikirvecKS(time,6),'k-x');
-% %plot([st ed],[0 0],'k-');
-% title('Invest+');
-% xlim([time(1) time(end)]);
-% xticks([0 5 10 15 20]+(st+1)); % st is set to -1
-% xticklabels([0 5 10 15 20]);
-% subplot(236);
-% plot(time,ikirvecXpa(time,7),'b-o');
-% hold on;
-% plot(time,ikirvecKS(time,7),'k-x');
-% %plot([st ed],[0 0],'k-');
-% title('Invest-');
-% xlim([time(1) time(end)]);
-% xticks([0 5 10 15 20]+(st+1)); % st is set to -1
-% xticklabels([0 5 10 15 20]);
 
 
 % Accuracy Statistics
@@ -322,52 +257,9 @@ ylim([-0.95 -0.75]);
 xticks([1 10 20 30 40 50]+1000);
 xticklabels([1 10 20 30 40 50]);
 
-% subplot(236);
-% plot(time,log(Zvec(time)),'r-');
-% title('TFP');
-% xlabel('Year');
-% xlim([time(1) time(end)]);
-% xticks([1 10 20 30 40 50]+1000);
-% xticklabels([1 10 20 30 40 50]);
-
-if (priflag); print -depsc2 DHall_extend.eps; end;
+%if (priflag); print -depsc2 DHall_extend.eps; end;
 % if (priflag); print -depsc2 DHall_trad.eps; end;
 
 
-% figure;
-% time = 1000:1200;
-% 
-% subplot(211);
-% plot(time,100*log(mpvec0Xpa(time)./KpvecXpa(time)),'b-o');
-% hold on;
-% plot(time,100*log(mpvec0KS(time)./KpvecKS(time)),'k-x');
-% % plot(time,100*log(mpvec1Xpa(time)./KpvecXpa(time)),'b-o');
-% % plot(time,100*log(mpvec1KS(time)./KpvecKS(time)),'k-o');
-% title('Capital');
-% ylabel('Percent');
-% legend('Xpa','KS');
-% xlim([time(1) time(end)]);
-% %xticks([1 10 20 30 40 50]+1000);
-% %xticklabels([1 10 20 30 40 50]);
-% 
-% subplot(212);
-% plot(time,-100*log(pvec0Xpa(time).*CvecXpa(time)),'b-o');
-% hold on;
-% plot(time,-100*log(pvec0KS(time).*CvecKS(time)),'k-x');
-% % plot(time,-100*log(pvec1Xpa(time).*CvecXpa(time)),'b-o');
-% % plot(time,-100*log(pvec1KS(time).*CvecKS(time)),'k-o');
-% title('Consumption');
-% xlabel('Year');
-% ylabel('Percent');
-% xlim([time(1) time(end)]);
-% %xticks([1 10 20 30 40 50]+1000);
-% %xticklabels([1 10 20 30 40 50]);
-% 
 disp([mean(jsonKS.output.eptimein) mean(jsonKS.output.eptimeout) size(jsonKS.output.eptimeout,1) sum(jsonKS.output.eptimein)+sum(jsonKS.output.eptimeout)]);
 disp([mean(jsonXpa.output.eptimein) mean(jsonXpa.output.eptimeout) size(jsonXpa.output.eptimeout,1) sum(jsonXpa.output.eptimein)+sum(jsonXpa.output.eptimeout)]);
-
-% subplot(313);
-% plot(time,log(Zvec(time)),'r-');
-% title('TFP');
-% xlabel('Year');
-% xlim([time(1) time(end)]);
