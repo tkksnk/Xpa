@@ -30,7 +30,7 @@ program solveXpa
     type(json_core) :: core
     real(8), allocatable :: temp(:)
     integer found
-    type(json_value), pointer :: p, input, output, ss
+    type(json_value), pointer :: p, input, output, ss, irf
     ! for dgetrf, dgetri
     integer INFO
     integer IPIVk(rk), IPIVm(rm)

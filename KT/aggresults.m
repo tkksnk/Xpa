@@ -3,10 +3,10 @@
 clear all;
 
 % parameters
-jsonKS = jsondecode(fileread('./results_extend_KS.json'));
-jsonXpa = jsondecode(fileread('./results_extend_Xpa.json'));
-% jsonKS = jsondecode(fileread('./results_traditional_KS.json'));
-% jsonXpa = jsondecode(fileread('./results_traditional_Xpa.json'));
+% jsonKS = jsondecode(fileread('./results_extend_KS.json'));
+% jsonXpa = jsondecode(fileread('./results_extend_Xpa.json'));
+jsonKS = jsondecode(fileread('./results_traditional_KS.json'));
+jsonXpa = jsondecode(fileread('./results_traditional_Xpa.json'));
 drop = 500;
 simT = 2000;
 simTT = drop+simT;

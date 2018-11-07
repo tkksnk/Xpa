@@ -2,7 +2,7 @@
 
     integer, parameter :: diagnum = 200 ! for ss and inner loop
     integer, parameter :: diagnumout = 500 ! for outer loop
-    character(len=*), parameter :: jsonfilename = './results_traditional_KS.json'
+    character(len=*), parameter :: jsonfilename = './results_traditional_Xpa.json'
     logical, parameter :: jsonoutput = .true.
 
     logical, parameter :: nraflag = .false. ! NOTE: in the inner loop, nra sometime doesn't work... in planner, nra doesn't work
@@ -12,7 +12,7 @@
     logical, parameter :: adjbias = .true.
     logical, parameter :: naiveflag = .false.
     real(8), parameter :: damp = 1.0d0
-    real(8), parameter :: dampss = 0.05d0 ! for interation ss
+    real(8), parameter :: dampss = 0.05d0 ! for iteration ss
     integer, parameter :: simT = 2000
     integer, parameter :: drop = 500
     integer, parameter :: simTT = simT+drop
@@ -23,7 +23,7 @@
     integer, parameter :: nk = 101
     integer, parameter :: nm = 5
     integer, parameter :: nz = 5
-    integer, parameter :: ne = 5 !1
+    integer, parameter :: ne = 1
     integer, parameter :: nb = 2001 !2001
     integer, parameter :: rk = nk-2
     integer, parameter :: rm = nm-2
