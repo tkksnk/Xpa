@@ -1,7 +1,6 @@
 function [Yvec Ivec Nvec Kvec Cvec Kpvec Zvec] = calcaggstat(json,simT,drop,GAMY,DELTA)
 
-% load variables: not here?
-% json = jsondecode(fileread('./output.json'));
+% load variables
 Kvec = json.output.Kvec;
 Zvec = json.output.Zvec;
 Yvec = json.output.Yvec;
@@ -10,14 +9,7 @@ Nvec = json.output.Nvec;
 Cvec = json.output.Cvec;
 Kpvec = json.output.Kpvec;
 Xvec = json.output.Xvec;
-% eval(['load ' dir 'Kvec.txt;']);
-% eval(['load ' dir 'Zvec.txt;']);
-% eval(['load ' dir 'Yvec.txt;']);
-% eval(['load ' dir 'Ivec.txt;']);
-% eval(['load ' dir 'Nvec.txt;']);
-% eval(['load ' dir 'Cvec.txt;']);
 
-% Xvec = Ivec./Kvec;
 Kvec = Kvec(drop+1:simT+drop);
 Zvec = Zvec(drop+1:simT+drop);
 Yvec = Yvec(drop+1:simT+drop);
@@ -34,7 +26,6 @@ sd = hpfilter(so,100);
 sd = sd(9:simT-8,:);
 std0 = std(sd);
 
-% TODO: export to csv?
 disp('  Standard deviation');
 disp('    Y         C         I         N         K         Z');
 disp([std0(1)*100 std0(2:6)/std0(1)]);

@@ -1,22 +1,13 @@
 function [mpvec0 pvec0 mpvec1 pvec1] = calcaccurat(json,simT,drop,nm,nz,GAMY,DELTA,fitflag)
 
 % load variables
-% json = jsondecode(fileread('./output.json'));
-knotsm = json.input.knotsm;
+Eknotsm = json.input.knotsm;
 izvec = json.input.izvec;
 mpmat0 = json.output.mpmat0;
 pmat0 = json.output.pmat0;
 Kvec = json.output.Kvec;
 Kpvec = json.output.Kpvec;
 Cvec = json.output.Cvec;
-% dir = './';
-% eval(['load ' dir 'knotsm.txt;']);
-% eval(['load ' dir 'mpmat0.txt;']);
-% eval(['load ' dir 'pmat0.txt;']);
-% eval(['load ' dir 'izvec.txt;']);
-% eval(['load ' dir 'Kvec.txt;']);
-% eval(['load ' dir 'Ivec.txt;']);
-% eval(['load ' dir 'Cvec.txt;']);
 
 for iz=1:nz
     for im=1:nm
@@ -31,9 +22,9 @@ end
 [mpvec1 pvec1] = calcDH(knotsm,mpmat,pmat,izvec,Kvec,1);
 
 izvec = izvec(drop+1:simT+drop);
-%Kpvec = (Ivec(drop+1:simT+drop) + (1-DELTA)*Kvec(drop+1:simT+drop))/GAMY;
 Kvec = Kvec(drop+1:simT+drop);
 Kpvec = Kpvec(drop+1:simT+drop);
+%Kpvec = (Ivec(drop+1:simT+drop) + (1-DELTA)*Kvec(drop+1:simT+drop))/GAMY;
 Cvec = Cvec(drop+1:simT+drop);
 mpvec0 = mpvec0(drop+1:simT+drop);
 pvec0 = pvec0(drop+1:simT+drop);
@@ -57,7 +48,6 @@ for iz = 1:nz
         yhat = zeros(sum(izvec==iz),2);
         yhat(:,1) = Beta(1,1) + Beta(2,1)*X(:,2);
         yhat(:,2) = Beta(1,2) + Beta(2,2)*X(:,2);
-%        yhat = X*Beta;
         e1 = y(:,1)-yhat(:,1);
         e2 = y(:,2)-yhat(:,2);
     else
@@ -73,7 +63,6 @@ for iz = 1:nz
     
 end
 
-% TODO: export to csv?
 disp('    DH max              DH mean             RMSE                Rsq');
 disp('    K''        p         K''        p         K''        p         K''       p');
 disp([DHmax DHmean RMSE Rsq]);

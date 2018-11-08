@@ -1,26 +1,25 @@
-% Aggresults.m: Display results about aggregate variables from KT model
-
+% aggresults.m: Display results about aggregate variables
 clear all;
 
-% parameters
+%% parameters
 % jsonKS = jsondecode(fileread('./results_extend_KS.json'));
 % jsonXpa = jsondecode(fileread('./results_extend_Xpa.json'));
 jsonKS = jsondecode(fileread('./results_traditional_KS.json'));
 jsonXpa = jsondecode(fileread('./results_traditional_Xpa.json'));
-drop = 500;
-simT = 2000;
-simTT = drop+simT;
-irfdrop = 200;
-irfT = 50;
-irfTT = irfdrop+irfT;
+
+drop = jsonXpa.input.drop;
+simT = jsonXpa.input.simT;
+irfdrop = jsonXpa.input.irfdrop;
 nm = size(jsonXpa.input.knotsm,1);
 nz = size(jsonXpa.input.Gz,1);
 GAMY = jsonXpa.input.param(1);
 DELTA = jsonXpa.input.param(3);
+
 fitflag = 0;
 priflag = 1;
 
-% business cycle statistics
+
+%% business cycle statistics
 disp(' ');
 disp(' Xpa:business cycle statistics');
 [YvecXpa IvecXpa NvecXpa KvecXpa CvecXpa KpvecXpa Zvec] = calcaggstat(jsonXpa,simT,drop,GAMY,DELTA);
@@ -28,7 +27,6 @@ disp(' ');
 disp(' KS:business cycle statistics');
 [YvecKS IvecKS NvecKS KvecKS CvecKS KpvecKS Zvec] = calcaggstat(jsonKS,simT,drop,GAMY,DELTA);
 
-% simulated sequence of Y, I, N, and C for 50 years
 figure;
 time = 1001:1050;
 
@@ -113,7 +111,7 @@ disp('    K''        p         K''        p');
 disp([Diffmax Diffmean]);
 
 
-% IRFs
+%% IRFs
 disp(' ');
 disp(' Xpa:Stochastic steady state');
 [YirvecXpa IirvecXpa NirvecXpa KirvecXpa CirvecXpa Zirvec ikirvecXpa] = calcstochss(jsonXpa,irfdrop);
@@ -197,7 +195,7 @@ xticklabels([0 5 10 15 20]);
 % if (priflag); print -depsc2 irfall_trad.eps; end;
 
 
-% Accuracy Statistics
+%% Accuracy Statistics
 disp(' ');
 disp(' Xpa:Accuracy statistics');
 [mpvec0Xpa pvec0Xpa mpvec1Xpa pvec1Xpa] = calcaccurat(jsonXpa,simT,drop,nm,nz,GAMY,DELTA,fitflag);
