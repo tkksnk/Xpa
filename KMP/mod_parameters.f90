@@ -3,7 +3,9 @@
     integer, parameter :: maxiter = 2000
     integer, parameter :: diagnum = 200
     integer, parameter :: diagnumout = 500
-    character(len=*), parameter :: jsonfilename = './results_calibKS_KS.json'
+!    character(len=*), parameter :: jsonfilename = './results_calibKS_Xpa.json'
+!    character(len=*), parameter :: jsonfilename = './results_calibhety_Xpa.json'
+    character(len=*), parameter :: jsonfilename = './results_calibKMP_Xpa.json'
     logical, parameter :: jsonoutput = .true.
 
     logical, parameter :: nraflag = .true.
@@ -18,9 +20,9 @@
     real(8), parameter :: deggrid = 4.0d0
     real(8), parameter :: damp = 0.35d0 ! for new: better convergence than 0.4
     ! for hety and KMP
-    ! real(8), parameter :: dampss = 0.05d0 ! for iterative method
+    real(8), parameter :: dampss = 0.05d0 ! for iterative method
     ! for KS
-    real(8), parameter :: dampss = 0.005d0 ! for iterative method
+    ! real(8), parameter :: dampss = 0.005d0 ! for iterative method
     integer, parameter :: simT = 2000
     integer, parameter :: drop = 500
     integer, parameter :: simTT = simT+drop
@@ -32,20 +34,21 @@
     integer, parameter :: nm = 5
     integer, parameter :: nz = 2
     integer, parameter :: ne = 2
-    integer, parameter :: ny = 1
-    integer, parameter :: nd = 1
-    real(8), parameter :: kmax = 250.0d0 ! KS
-    ! real(8), parameter :: kmax = 400.0d0 ! KS
-    ! real(8), parameter :: kmax = 700.0d0 ! hety
-    ! real(8), parameter :: kmax = 2000.0d0 ! KMP
+!    integer, parameter :: ny = 1 ! KS
+    integer, parameter :: ny = 7 ! hety and KMP
+!    integer, parameter :: nd = 1 ! KS and hety
+    integer, parameter :: nd = 3 ! KMP
+!    real(8), parameter :: kmax = 250.0d0 ! KS
+!    real(8), parameter :: kmax = 700.0d0 ! hety
+    real(8), parameter :: kmax = 2000.0d0 ! KMP
     integer, parameter :: nx = ne*ny*nd
     integer, parameter :: nb = 2001 ! NOTE: with KS calibration, kmax=200 and nb=5000 yields very different distribution
     integer, parameter :: rk = nk-2
     integer, parameter :: rm = nm-2
 
 ! parameters
-    ! real(8), parameter :: THETA = 1.0d0-1.0d0/160.0d0
-    real(8), parameter :: THETA = 1.0d0
+    real(8), parameter :: THETA = 1.0d0-1.0d0/160.0d0 ! KMP
+    ! real(8), parameter :: THETA = 1.0d0 ! KS and hety
     real(8), parameter :: SIGMA  = 1.0d0
     real(8), parameter :: ALPHA  = 0.36d0
     real(8), parameter :: DELTA  = 0.025d0
@@ -63,9 +66,9 @@
     ! NOTE: hours worked in steady state h*(1-uss) is normalized to one
     real(8), parameter :: uss = (1.0d0-FractionZb)*ug + FractionZb*ub
     ! for KMP
-    ! real(8), parameter :: mu = 0.5d0          ! unemployment insurance
+    real(8), parameter :: mu = 0.5d0          ! unemployment insurance
     ! for KS and hety
-    real(8), parameter :: mu = 0.01d0         ! unemployment insurance
+    ! real(8), parameter :: mu = 0.01d0         ! unemployment insurance
     real(8), parameter :: h = 1.0d0/(1.0d0-ub) ! hours worked per worker
     real(8), parameter :: taug = ug*mu/(h*(1-ug)+ug*mu)
     real(8), parameter :: taub = ub*mu/(h*(1-ub)+ub*mu)

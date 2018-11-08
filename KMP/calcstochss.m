@@ -15,12 +15,6 @@ shareWirvec(:,6) = json.irf.shareW9095;
 shareWirvec(:,7) = json.irf.shareW9599;
 shareWirvec(:,8) = json.irf.shareWT1;
 gini = json.irf.gini;
-% eval(['load ' dir 'Kirvec.txt;']);
-% eval(['load ' dir 'Zirvec.txt;']);
-% eval(['load ' dir 'Yirvec.txt;']);
-% eval(['load ' dir 'Iirvec.txt;']);
-% eval(['load ' dir 'Nirvec.txt;']);
-% eval(['load ' dir 'Cirvec.txt;']);
 mnow = Kirvec(irfdrop);
 ynow = Yirvec(irfdrop);
 nnow = Nirvec(irfdrop);
@@ -31,6 +25,3 @@ disp('    Q1        Q2        Q3        Q4        Q5        9095      9599      
 disp(shareWirvec(irfdrop,:));
 disp('    Gini      DeltaC');
 disp([gini(irfdrop) 100*log(Cirvec(irfdrop+2)/Cirvec(irfdrop+1))]);
-
-% disp('    Y         C         I         N         K');
-% disp([Yirvec(irfdrop) Cirvec(irfdrop) Iirvec(irfdrop) Nirvec(irfdrop) Kirvec(irfdrop)]);

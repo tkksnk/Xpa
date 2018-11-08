@@ -1,18 +1,25 @@
+% aggresults.m: Display results about aggregate variables
 clear all;
 
-jsonXpa = jsondecode(fileread('./results_calibKMPbenchmark_Xpa.json'));
-jsonKS = jsondecode(fileread('./results_calibKMPbenchmark_KS.json'));
+%% parameters
+jsonXpa = jsondecode(fileread('./results_calibKMP_Xpa.json'));
+jsonKS = jsondecode(fileread('./results_calibKMP_KS.json'));
+% jsonXpa = jsondecode(fileread('./results_calibhety_Xpa.json'));
+% jsonKS = jsondecode(fileread('./results_calibhety_KS.json'));
 % jsonXpa = jsondecode(fileread('./results_calibKS_Xpa.json'));
 % jsonKS = jsondecode(fileread('./results_calibKS_KS.json'));
-drop = 500;
-simT = 2000;
-irfdrop = 2000;
-nm = 5;
-nz = 2;
-fitflag = 0;
-priflag = 1;
 
-% business cycle statistics
+drop = jsonXpa.input.drop;
+simT = jsonXpa.input.simT;
+irfdrop = jsonXpa.input.irfdrop;
+nm = size(jsonXpa.input.knotsm,1);
+nz = size(jsonXpa.input.Gz,1);
+
+fitflag = 0; % =1 fit linear forecasting rule for static errors
+priflag = 1; % =1 print eps files
+
+
+%% business cycle statistics
 disp(' ');
 disp(' Xpa:business cycle statistics');
 [YvecXpa IvecXpa NvecXpa KvecXpa CvecXpa KpvecXpa Zvec] = calcaggstat(jsonXpa,simT,drop);
@@ -20,9 +27,27 @@ disp(' ');
 disp(' KS:business cycle statistics');
 [YvecKS IvecKS NvecKS KvecKS CvecKS KpvecKS Zvec] = calcaggstat(jsonKS,simT,drop);
 
-% simulated sequence of Y, I, N, and C for 50 years
 figure;
 time = 1001:1200;
+
+subplot(221);
+plot(time,log(KvecXpa(time)),'b-o');
+hold on;
+plot(time,log(KvecKS(time)),'k-x');
+title('Capital');
+ylabel('Log');
+xlim([time(1) time(end)]);
+xticks([1 40 80 120 160 200]+1000);
+xticklabels([1 40 80 120 160 200]);
+
+subplot(222);
+plot(time,log(CvecXpa(time)),'b-o');
+hold on;
+plot(time,log(CvecKS(time)),'k-x');
+title('Consumption');
+xlim([time(1) time(end)]);
+xticks([1 40 80 120 160 200]+1000);
+xticklabels([1 40 80 120 160 200]);
 
 subplot(223);
 plot(time,log(YvecXpa(time)),'b-o');
@@ -46,48 +71,10 @@ xlim([time(1) time(end)]);
 xticks([1 40 80 120 160 200]+1000);
 xticklabels([1 40 80 120 160 200]);
 
-% subplot(233);
-% plot(time,log(NvecXpa(time)),'b-o');
-% hold on;
-% plot(time,log(NvecKS(time)),'k-x');
-% title('Labor');
-% xlim([time(1) time(end)]);
-% xticks([1 40 80 120 160 200]+1000);
-% xticklabels([1 40 80 120 160 200]);
-
-subplot(221);
-plot(time,log(KvecXpa(time)),'b-o');
-hold on;
-plot(time,log(KvecKS(time)),'k-x');
-title('Capital');
-ylabel('Log');
-xlim([time(1) time(end)]);
-xticks([1 40 80 120 160 200]+1000);
-xticklabels([1 40 80 120 160 200]);
-
-subplot(222);
-plot(time,log(CvecXpa(time)),'b-o');
-hold on;
-plot(time,log(CvecKS(time)),'k-x');
-title('Consumption');
-xlim([time(1) time(end)]);
-xticks([1 40 80 120 160 200]+1000);
-xticklabels([1 40 80 120 160 200]);
-
 if (priflag); print -depsc2 simall_bench.eps; end;
-
-% subplot(236);
-% plot(time,log(Zvec(time)),'r-');
-% title('TFP');
-% xlabel('Year');
-% xlim([time(1) time(end)]);
-% xticks([1 40 80 120 160 200]+1000);
-% xticklabels([1 40 80 120 160 200]);
-
 %if (priflag); print -depsc2 simall_extend.eps; end;
 
 izvec = jsonXpa.input.izvec;
-% eval(['load ' dirXpa 'izvec.txt;']);
 izvec = izvec(drop+1:simT+drop);
 
 for iz = 1:nz
@@ -100,10 +87,10 @@ end
 disp(' ');
 disp(' Difference between Xpa and KS');
 disp('    max         mean');
-% disp('    K''        p         K''        p');
 disp([Diffmax Diffmean]);
 
-% IRFs
+
+%% IRFs
 disp(' ');
 disp(' Xpa:Stochastic steady state');
 [YirvecXpa IirvecXpa NirvecXpa KirvecXpa CirvecXpa Zirvec shareWirvecXpa] = calcstochss(jsonXpa,irfdrop);
@@ -157,7 +144,8 @@ xticklabels([0 1 2 3 4 5]);
 
 if (priflag); print -depsc2 irfall_bench.eps; end;
 
-% Accuracy Statistics
+
+%% Accuracy Statistics
 disp(' ');
 disp(' Xpa:Accuracy statistics');
 [mpvec0Xpa mpvec1Xpa] = calcaccurat(jsonXpa,simT,drop,nm,nz,fitflag);
@@ -169,39 +157,27 @@ figure;
 time = 1001:1500;
 
 subplot(211);
-%plot(time,log(mpvec0KS(time)),'m-^');
 plot(time,mpvec0KS(time),'m-.');
 hold on;
-%plot(time,log(mpvec1KS(time)),'c-o');
-%plot(time,log(KpvecKS(time)),'k-x');
 plot(time,mpvec1KS(time),'g--');
 plot(time,KpvecKS(time),'k-');
 title('KS:Capital');
 ylabel('Log');
-%legend('Dynamic','Static','Actural','Location','SouthEast');
 legend('Dynamic','Static','Actural','Location','NorthEast');
 xlim([time(1) time(end)]);
-%ylim([-0.2 0.4]);
-% xticks([1 10 20 30 40 50]+1000);
-% xticklabels([1 10 20 30 40 50]);
 
 subplot(212);
-%plot(time,log(mpvec0Xpa(time)),'m-^');
 plot(time,mpvec0Xpa(time),'m-.');
 hold on;
-%plot(time,log(mpvec1Xpa(time)),'c-o');
-%plot(time,log(KpvecXpa(time)),'k-x');
 plot(time,mpvec1Xpa(time),'g--');
 plot(time,KpvecXpa(time),'k-');
 title('Xpa:Capital');
 xlabel('Quarter');
 ylabel('Log');
 xlim([time(1) time(end)]);
-%ylim([-0.2 0.4]);
-% xticks([1 10 20 30 40 50]+1000);
-% xticklabels([1 10 20 30 40 50]);
 
 if (priflag); print -depsc2 DHall_bench.eps; end;
+
 
 disp([mean(jsonKS.output.eptimein) mean(jsonKS.output.eptimeout) size(jsonKS.output.eptimeout,1) sum(jsonKS.output.eptimein)+sum(jsonKS.output.eptimeout)]);
 disp([mean(jsonXpa.output.eptimein) mean(jsonXpa.output.eptimeout) size(jsonXpa.output.eptimeout,1) sum(jsonXpa.output.eptimein)+sum(jsonXpa.output.eptimeout)]);

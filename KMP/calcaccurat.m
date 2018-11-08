@@ -40,7 +40,6 @@ for iz = 1:nz
         Beta = inv(X'*X)*X'*y;
         yhat = zeros(sum(izvec==iz),2);
         yhat(:,1) = Beta(1,1) + Beta(2,1)*X(:,2);
-%        yhat = X*Beta;
         e1 = y(:,1)-yhat(:,1);
     else
         % nonlinear forecasts ("static" forecast errors)
@@ -52,9 +51,7 @@ for iz = 1:nz
     
 end
 
-% TODO: export to csv?
 disp('    DH max    DH mean   RMSE      Rsq');
-%disp('    K''        K''        K''        K''');
 disp([DHmax DHmean RMSE Rsq]);
 
 
