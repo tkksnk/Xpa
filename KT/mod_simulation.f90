@@ -106,13 +106,6 @@ subroutine calcirf1(vmat0,mpmat0,pmat0,knotsk,knotsm,knotsb,invTk,invTm,Gz,Pz,Ge
     real(8) bmat(nb,ne), mpmat(nb,ne), ymat(nb,ne), imat(nb,ne), nmat(nb,ne), mu1(nb,ne)
     real(8) wz, aggirfz(2,8), disaggirfz(2,7), Yvecz(2), Nvecz(2), Cvecz(2), Ivecz(2), mu1z(nb,ne,2)
 
-#ifdef MATLAB_MEX_FILE
-    integer, external :: mexPrintf
-    integer k
-    character(len=80) line
-    LOGICAL :: INTERRUPTED
-#endif
-
 
     call system_clock(ct1, cr)
 
@@ -222,41 +215,30 @@ subroutine calcirf1(vmat0,mpmat0,pmat0,knotsk,knotsm,knotsb,invTk,invTm,Gz,Pz,Ge
             aggirfz(iz-kz+1,5) = sum(sum(mu0*imat,1),1)
             aggirfz(iz-kz+1,7) = sum(sum(mu0*mpmat,1),1)
             aggirfz(iz-kz+1,8) = sum(sum(mu0*imat,1),1)/mnow
-            ! ! calculate aggregate variables
-            ! Yvecz(iz-kz+1) = sum(sum(mu0*ymat,1),1)
-            ! Nvecz(iz-kz+1) = sum(sum(mu0*nmat,1),1)
-            ! Cvecz(iz-kz+1) = sum(sum(mu0*(ymat-imat),1),1)
-            ! Ivecz(iz-kz+1) = sum(sum(mu0*imat,1),1)
             mu1z(:,:,iz-kz+1) = mu1
 
             ! calculate disaggregate variables
             call calcdiststat(knotsb,mu0,mpmat,disaggirfz(iz-kz+1,:))
 
             ! diagnosis
-            ! if (mod(tt,1)==0) then
             if (mod(tt,1)==0) then
+
                 write(*,"('  at iz = ', I5, ': pnow =', F8.5, ', pl =', F8.5, ', ph =', F8.5, ' ', I2)") iz, p1, plow, phigh, iterbp
-                ! write(*,"(F10.5, F10.5, F10.5, F10.5, F10.5, F10.5)") irfmat(tt,:)
+
             end if
 
         end do ! iz
 
-        ! linear interpolation
+        ! linear interpolation for irfs
         aggirf(tt,:) = wz*aggirfz(1,:) + (1.0d0-wz)*aggirfz(2,:)
         disaggirf(tt,:) = wz*disaggirfz(1,:) + (1.0d0-wz)*disaggirfz(2,:)
-        ! aggirf(tt,2) = wz*Gz(kz) + (1.0d0-wz)*Gz(kz+1)
-        ! aggirf(tt,6) = mnow
-        ! aggirf(tt,1) = wz*Yvecz(1) + (1.0d0-wz)*Yvecz(2)
-        ! aggirf(tt,3) = wz*Nvecz(1) + (1.0d0-wz)*Nvecz(2)
-        ! aggirf(tt,4) = wz*Cvecz(1) + (1.0d0-wz)*Cvecz(2)
-        ! aggirf(tt,5) = wz*Ivecz(1) + (1.0d0-wz)*Ivecz(2)
 
         ! diagnosis
-        ! if (mod(tt,1)==0) then
         if (mod(tt,1)==0) then
             ! write(*,"('  time = ', I5, ': pnow =', F8.5, ', pl =', F8.5, ', ph =', F8.5, ' ', I2)") tt, p1, plow, phigh, iterbp
             write(*,"('  time = ', I5, F10.5, F10.5, F10.5, F10.5, F10.5, F10.5)") tt, aggirf(tt,1:6)
             print *, disaggirf(tt,:)
+
         end if
 
         ! update distribution
@@ -286,13 +268,6 @@ subroutine simulation(vmat0,mpmat0,pmat0,knotsk,knotsm,knotsb,invTk,invTm,Gz,Pz,
     integer im, iz, jz, ie, je, ib, tt, iterbp, ct1, ct2, cr
     ! NOTE: the name of mpmat is confusing
     real(8) bmat(nb,ne), mpmat(nb,ne), ymat(nb,ne), imat(nb,ne), nmat(nb,ne), mu1(nb,ne)
-
-#ifdef MATLAB_MEX_FILE
-    integer, external :: mexPrintf
-    integer k
-    character(len=80) line
-    LOGICAL :: INTERRUPTED
-#endif
 
 
     call system_clock(ct1, cr)
@@ -402,26 +377,12 @@ subroutine simulation(vmat0,mpmat0,pmat0,knotsk,knotsm,knotsb,invTk,invTm,Gz,Pz,
         call calcdiststat(knotsb,mu0,mpmat,disaggsim(tt,:))
 
         ! diagnosis
-        ! if (mod(tt,1)==0) then
         if (mod(tt,diagnumout)==0) then
-#ifdef MATLAB_MEX_FILE
-            write(line,"('  time      ', I4, '  pnow =', F8.5, ', pl =', F8.5, ', ph =', F8.5, ' ', I2)") tt, p1, plow, phigh, iterbp
-            k = mexPrintf(line//achar(10))
-            ! write(line,"(F10.5, F10.5, F10.5, F10.5, F10.5, F10.5)") aggmat(tt,:)
-    		k = mexPrintf(line//achar(10))
-    		call mexEvalString("drawnow")
-#else
-            write(*,"('  time = ', I5, ': pnow =', F8.5, ', pl =', F8.5, ', ph =', F8.5, ' ', I2)") tt, p1, plow, phigh, iterbp
-            ! print *, mumat(tt,:)
-            print *, sum(sum(mu0,1),1)
-            ! write(*,"(F10.5, F10.5, F10.5, F10.5, F10.5, F10.5)") aggmat(tt,:)
-#endif
-        end if
 
-#ifdef MATLAB_MEX_FILE
-		INTERRUPTED = utIsInterruptPendingInFortran()
-		IF (INTERRUPTED) RETURN
-#endif
+            write(*,"('  time = ', I5, ': pnow =', F8.5, ', pl =', F8.5, ', ph =', F8.5, ' ', I2)") tt, p1, plow, phigh, iterbp
+            print *, sum(sum(mu0,1),1)
+
+        end if
 
         ! update distribution
         mu0 = mu1
@@ -442,7 +403,6 @@ subroutine pricemapks(p0,knotsk,knotsm,Ge,Pe,znow,mnow,mp,knotsb,mu0,cfmate,p1,m
     use mod_parameters
     real(8), intent(in) :: p0, knotsk(:), knotsm(:), Ge(ne), Pe(ne,ne), znow, mnow, mp, knotsb(:), mu0(:,:), cfmate(:,:,:,:)
     real(8), intent(out) :: p1, mpmat(:,:), ymat(:,:), imat(:,:), nmat(:,:), mu1(:,:)
-!    integer, intent(out) :: error
     real(8) cfmat(16,rk+1,rm+1)
     real(8) w0, enow, know, yterm, nnow, ynow, inow, klow, khigh
     real(8) kwnow, f0, df0, d2f0, e0now, kcnow, f1, df1, d2f1, e1now, xinow, a1(nb,ne), wb1(ne), wb2(nb,ne)
@@ -451,7 +411,6 @@ subroutine pricemapks(p0,knotsk,knotsm,Ge,Pe,znow,mnow,mp,knotsb,mu0,cfmate,p1,m
 
 
     w0 = ETA/p0
-!    error = 0
     mpmat = 0.0d0 ! NOTE: added on 18/08/12
     ymat = 0.0d0
     imat = 0.0d0
@@ -471,7 +430,7 @@ subroutine pricemapks(p0,knotsk,knotsm,Ge,Pe,znow,mnow,mp,knotsb,mu0,cfmate,p1,m
         end if
 
         call vfuncsp2(kwnow,cfmat,knotsk,knotsm,mp,p0,f0,df0,d2f0)
-        e0now = -f0 !-vfuncsp2(kwnow,cfmat,knotsk,knotsm,mp,p0)
+        e0now = -f0
 
         kb1(ie) = gridlookup2(kwnow,knotsb)
         wb1(ie) = (knotsb(kb1(ie)+1)-kwnow)/(knotsb(kb1(ie)+1)-knotsb(kb1(ie)))
@@ -499,7 +458,7 @@ subroutine pricemapks(p0,knotsk,knotsm,Ge,Pe,znow,mnow,mp,knotsb,mu0,cfmate,p1,m
                 end if
 
                 call vfuncsp2(kcnow,cfmat,knotsk,knotsm,mp,p0,f1,df1,d2f1)
-                e1now = -f1 !-vfuncsp2(kcnow,cfmat,knotsk,knotsm,mp,p0)
+                e1now = -f1
                 xinow = min( XIBAR, max(0.0d0,(e0now-e1now)/ETA) )
                 a1(ib,ie) = xinow/XIBAR
 
@@ -513,7 +472,6 @@ subroutine pricemapks(p0,knotsk,knotsm,Ge,Pe,znow,mnow,mp,knotsb,mu0,cfmate,p1,m
                 nmat(ib,ie) = nnow + xinow**2/XIBAR/2.0d0 ! NOTE: Is the adj. cost term correct?
                 ymat(ib,ie) = ynow
                 imat(ib,ie) = inow
-                ! ikmat(ib,ie) = inow/know
 
                 kb2(ib,ie) = gridlookup2(kcnow,knotsb)
                 wb2(ib,ie) = (knotsb(kb2(ib,ie)+1)-kcnow)/(knotsb(kb2(ib,ie)+1)-knotsb(kb2(ib,ie)))

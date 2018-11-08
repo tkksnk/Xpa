@@ -48,7 +48,6 @@ program solveXpa
     else
         knotsk = logspace(log(kbounds(1) - 1.0d0*kbounds(1) + 1.0d0)/log(10.0d0), log(kbounds(2) - 1.0d0*kbounds(1) + 1.0d0)/log(10.0d0), nk)
         knotsk = knotsk + kbounds(1) - 1.0d0
-        ! knotsb = linspace(kbounds(1),kbounds(2),nb)
         knotsb = logspace(log(kbounds(1) - 1.0d0*kbounds(1) + 1.0d0)/log(10.0d0), log(kbounds(2) - 1.0d0*kbounds(1) + 1.0d0)/log(10.0d0), nb)
         knotsb = knotsb + kbounds(1) - 1.0d0
     end if
@@ -57,27 +56,6 @@ program solveXpa
     call dgetrf(rk,rk,invTk,rk,IPIVk,INFOk)
     call dgetri(rk,invTk,rk,IPIVk,WORKk,rk,INFOk)
 
-    ! ! Aiyagari
-    ! Ge(1) = mu
-    ! Ge(2) = 1.0d0
-    ! Pe(1,1) = puu
-    ! Pe(1,2) = 1.0d0-puu
-    ! Pe(2,1) = 1.0d0-pee
-    ! Pe(2,2) = pee
-    ! Gy = 1.0d0
-    ! Py = 1.0d0
-    ! Gd = 0.96d0
-    ! Pd = 1.0d0
-    ! KS 1998: no tax for unemployed
-    ! Gez(1,1) = mu
-    ! Gez(2,1) = h*(1.0d0-taug)
-    ! Gez(1,2) = mu
-    ! Gez(2,2) = h*(1.0d0-taub)
-    ! call calcPeKS(pgg,pbb,ug,ub,DurationUg,DurationUb,corr,Pez)
-    ! Gy = 1.0d0
-    ! Py = 1.0d0
-    ! Gd = 0.989975d0
-    ! Pd = 1.0d0
     ! KMP: tax for both
     Gez(1,1) = mu*(1.0d0-taug)
     Gez(2,1) = h*(1.0d0-taug)
@@ -115,13 +93,6 @@ program solveXpa
     Pe(1,2) = weightGU*(Pez(1,2,1) + Pez(1,2,2)) + weightBU*(Pez(1,2,3) + Pez(1,2,4))
     Pe(2,1) = weightGE*(Pez(2,1,1) + Pez(2,1,2)) + weightBE*(Pez(2,1,3) + Pez(2,1,4))
     Pe(2,2) = weightGE*(Pez(2,2,1) + Pez(2,2,2)) + weightBE*(Pez(2,2,3) + Pez(2,2,4))
-    ! Ge = (/0.150000000000000, 1.06397849462366/)
-    ! Pe(1,:) = (/0.507440476190476, 0.492559523809524/)
-    ! Pe(2,:) = (/3.707437275985664E-002, 0.962925627240143/)
-    print *, Ge
-    print *, Pe(1,:), sum(Pe(1,:))
-    print *, Pe(2,:), sum(Pe(2,:))
-    ! pause
 
     ! stationary distribution for exogenous grid
     muez(1,:) = (/ug, ub/)
@@ -150,7 +121,7 @@ program solveXpa
 
     mux = (1.0d0-FractionZb)*muxz(:,1) + FractionZb*muxz(:,2)
     ! mux = calcmu(Pe)
-    print *, mux
+    ! print *, mux
     ! pause
 
     ! exogenous variables' grid points
@@ -161,12 +132,8 @@ program solveXpa
 
     print *, 'Calculating the steady state'
     znow = 1.0d0
-    ! lnow = Ge(1)*mux(1)+Ge(2)*mux(2) !h*(1.0d0-uss)
+    ! lnow = Ge(1)*mux(1)+Ge(2)*mux(2)
     lnow = h*(1.0d0-uss)
-    znow = Gz(1)
-    lnow = Gl(1)
-    print *, lnow
-    ! pause
     call calcss(knotsk,knotsb,invTk,znow,lnow,Ge,Gy,Gd,Pe,Py,Pd,idmat,muxz,vmatss,gmatss,muss,evec,mpmat)
     mu0 = muss
     call calcdiststat(knotsb,mu0,ThresholdWvec,ShareWvec,gini)
@@ -183,13 +150,6 @@ program solveXpa
     end do
     psix = psix/mnow
     print *, mnow, psix, evec
-    ! pause
-
-    ! ! exogenous variables' grid points
-    ! Gz = (/zg, zb/)
-    ! Pz(1,:) = (/pgg, 1.0d0-pgg/)
-    ! Pz(2,:) = (/1.0d0-pbb, pbb/)
-    ! Gl = (/h*(1.0d0-ug), h*(1.0d0-ub)/)
 
     ! grid for aggregate capital
     knotsm = linspace(0.80d0*mnow, 1.15d0*mnow, nm)
@@ -214,7 +174,7 @@ program solveXpa
     call random_seed(put=seed)
 
     cumPz = cumsum(Pz)
-    izvec(1) = 1 !ceiling(dble(nz)/2.0d0)
+    izvec(1) = 1
     do tt = 1,simT+drop
 
         call random_number(rand)
@@ -235,7 +195,6 @@ program solveXpa
         call simulation(vmat0,gmat0,mpmat0,knotsk,knotsm,knotsb,invTk,invTm,Gz,Gl,Pz,Gez,Gy,Gd,Pez,Py,Pd,idmat,izvec,aggsim,disaggsim,mu0,eptimeout)
         call calcforecast(izvec,aggsim(:,6),BetaK,R2)
         call Beta2mat(BetaK,knotsm,mpmat1)
-        ! call outer(vmat0,gmat0,mpmat0,knotsk,knotsm,invTk,invTm,Gz,Gl,Pz,Gez,Gy,Gd,Pez,Py,Pd,idmat,psix,muxz,evec,mpmat1,eptimeout)
 
         diff = maxval(maxval(abs(mpmat1-mpmat0),1),1)
         iter = iter + 1
@@ -265,7 +224,6 @@ program solveXpa
     print *, 'done.'
 
 
-    ! the i/o of data will be replaced by json
     ! output via json
     if (jsonoutput) then
 

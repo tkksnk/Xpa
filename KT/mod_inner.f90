@@ -1,9 +1,6 @@
 module mod_inner
 
 
-#ifdef MATLAB_MEX_FILE
-USE INTERRUPTEXECUTION
-#endif
 use mod_functions
 use mod_spline
 implicit none
@@ -26,13 +23,6 @@ subroutine inner(mpmat,pmat,knotsk,knotsm,invTk,invTm,Gz,Pz,Ge,Pe,vmat0,gmat0,ep
     integer iter, s1, s2, ik, im, iz, jz, ie, je, ct1, ct2, cr
 
     real(8) time_begin, time_end
-
-#ifdef MATLAB_MEX_FILE
-    integer, external :: mexPrintf
-    integer k
-    character(len=240) line
-    LOGICAL :: INTERRUPTED
-#endif
 
 
     call system_clock(ct1,cr)
@@ -182,21 +172,11 @@ subroutine inner(mpmat,pmat,knotsk,knotsm,invTk,invTm,Gz,Pz,Ge,Pe,vmat0,gmat0,ep
 
         ! diagnosis
         if (mod(iter,diagnum)==0) then
-#ifdef MATLAB_MEX_FILE
-            write(line,"('  iteration ', I4, '  ||Tv-v|| = ', F10.5, '  ||Tkw-kw|| = ', F10.5, '  ||Tkc-kc|| = ', F10.5)") &
-            iter, diffv, diffgw, diffgc
-    		k = mexPrintf(line//achar(10))
-    		call mexEvalString("drawnow")
-#else
+
             write(*,"('  iteration ', I4, '  ||Tv-v|| = ', F10.5, '  ||Tkw-kw|| = ', F10.5, '  ||Tkc-kc|| = ', F10.5)") &
             iter, diffv, diffgw, diffgc
-#endif
-        end if
 
-#ifdef MATLAB_MEX_FILE
-		INTERRUPTED = utIsInterruptPendingInFortran()
-		IF (INTERRUPTED) RETURN
-#endif
+        end if
 
         if (diffgw<1d-4 .and. s1==0) then
             s1 = 1
@@ -359,25 +339,6 @@ subroutine nra(xinit,xmin,xmax,x,cfmat,knotsk,knotsm,mp,p0)
 
 
 end subroutine nra
-
-
-! function vfuncsp2(kp,cmat,knotsk,knotsm,mp,p) result(f)
-!
-!
-!     use mod_parameters, only: rk, rm, GAMY, BETA
-! 	real(8), intent (in) :: kp, mp, p
-!     real(8), intent (in) :: cmat(16,rk+1,rm+1)
-!     real(8), intent (in) :: knotsk(rk+2), knotsm(rm+2)
-!     real(8) f
-! 	real(8) EV, dfx, dfy, dfz
-!
-!
-!     call speva2(cmat,kp,mp,rk,rm,knotsk,knotsm,EV,dfx,dfy)
-!     f = -p*GAMY*kp + BETA*EV ! EV must be a scalar
-!     f = -f
-!
-!
-! end function vfuncsp2
 
 
 subroutine vfuncsp2(kp,cfmat,knotsk,knotsm,mp,p0,f0,df0,d2f0)

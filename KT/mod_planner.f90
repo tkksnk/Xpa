@@ -1,9 +1,6 @@
 module mod_planner
 
 
-#ifdef MATLAB_MEX_FILE
-USE INTERRUPTEXECUTION
-#endif
 use mod_functions
 use mod_spline
 implicit none
@@ -22,13 +19,6 @@ subroutine solvepl(knotsk,invTk,Gz,Pz,gmat0,nmat0,vmat0)
     real(8) nLmat(nk,nz), nHmat(nk,nz), nmat1(nk,nz), vmat1(nk,nz), gmat1(nk,nz), vcond(nk), cf(4,rk+1), &
     know, znow, yterm, cnow, nnow, f0, df0, d2f0
     real(8) diffg, diffv, diff
-
-#ifdef MATLAB_MEX_FILE
-    integer, external :: mexPrintf
-    integer k
-    character(len=240) line
-    LOGICAL :: INTERRUPTED
-#endif
 
 
     ! initial guess for vmat0 and nmat0
@@ -80,6 +70,7 @@ subroutine solvepl(knotsk,invTk,Gz,Pz,gmat0,nmat0,vmat0)
 
                 if (s1==0) then
 
+                ! NOTE: Newton-Rhapson is to be done
                 ! if (nraflag) then
                 !     call nra(nmat0(ik,iz),nLmat(ik,iz),nHmat(ik,iz),nnow,cf,knotsk,know,znow)
                 ! else
@@ -108,21 +99,11 @@ subroutine solvepl(knotsk,invTk,Gz,Pz,gmat0,nmat0,vmat0)
         diff  = diffv
         iter = iter + 1
         ! diagnosis
-        ! NOTE: if the interval of output is so small, ctrl-c doesn't work?
         if (mod(iter,100)==0) then
-#ifdef MATLAB_MEX_FILE
-            write(line,"('  iteration ', I4, '  ||Tv-v|| = ', F10.5, '  ||Tg-g|| = ', F10.5)") iter, diffv, diffg
-    		k = mexPrintf(line//achar(10))
-    		call mexEvalString("drawnow")
-#else
-            write(*,"('  iteration ', I4, '  ||Tv-v|| = ', F10.5, '  ||Tg-g|| = ', F10.5)") iter, diffv, diffg
-#endif
-        end if
 
-#ifdef MATLAB_MEX_FILE
-		INTERRUPTED = utIsInterruptPendingInFortran()
-		IF (INTERRUPTED) RETURN
-#endif
+            write(*,"('  iteration ', I4, '  ||Tv-v|| = ', F10.5, '  ||Tg-g|| = ', F10.5)") iter, diffv, diffg
+
+        end if
 
         if (diffg<1d-4 .and. s1==0) then
             s1 = 1
@@ -150,13 +131,6 @@ subroutine forecastpl(nmat0,knotsk,knotsm,Gz,mpmat0,pmat0)
     real(8), intent(out) :: mpmat0(:,:), pmat0(:,:)
     real(8) znow, know, wk, nnow, yterm, cnow, kp
     integer iz, im, ik
-
-#ifdef MATLAB_MEX_FILE
-    integer, external :: mexPrintf
-    integer k
-    character(len=240) line
-    LOGICAL :: INTERRUPTED
-#endif
 
 
     do iz = 1,nz

@@ -48,7 +48,6 @@ program solveXpa
     else
         knotsk = logspace(log(kbounds(1) - 1.0d0*kbounds(1) + 1.0d0)/log(10.0d0), log(kbounds(2) - 1.0d0*kbounds(1) + 1.0d0)/log(10.0d0), nk)
         knotsk = knotsk + kbounds(1) - 1.0d0
-        ! knotsb = linspace(kbounds(1),kbounds(2),nb)
         knotsb = logspace(log(kbounds(1) - 1.0d0*kbounds(1) + 1.0d0)/log(10.0d0), log(kbounds(2) - 1.0d0*kbounds(1) + 1.0d0)/log(10.0d0), nb)
         knotsb = knotsb + kbounds(1) - 1.0d0
     end if
@@ -57,27 +56,6 @@ program solveXpa
     call dgetrf(rk,rk,invTk,rk,IPIVk,INFOk)
     call dgetri(rk,invTk,rk,IPIVk,WORKk,rk,INFOk)
 
-    ! ! Aiyagari
-    ! Ge(1) = mu
-    ! Ge(2) = 1.0d0
-    ! Pe(1,1) = puu
-    ! Pe(1,2) = 1.0d0-puu
-    ! Pe(2,1) = 1.0d0-pee
-    ! Pe(2,2) = pee
-    ! Gy = 1.0d0
-    ! Py = 1.0d0
-    ! Gd = 0.96d0
-    ! Pd = 1.0d0
-    ! ! KS 1998: no tax for unemployed
-    ! Gez(1,1) = mu
-    ! Gez(2,1) = h*(1.0d0-taug)
-    ! Gez(1,2) = mu
-    ! Gez(2,2) = h*(1.0d0-taub)
-    ! call calcPeKS(pgg,pbb,ug,ub,DurationUg,DurationUb,corr,Pez)
-    ! Gy = 1.0d0
-    ! Py = 1.0d0
-    ! Gd = 0.989975d0
-    ! Pd = 1.0d0
     ! KMP: tax for both
     Gez(1,1) = mu*(1.0d0-taug)
     Gez(2,1) = h*(1.0d0-taug)
@@ -115,13 +93,6 @@ program solveXpa
     Pe(1,2) = weightGU*(Pez(1,2,1) + Pez(1,2,2)) + weightBU*(Pez(1,2,3) + Pez(1,2,4))
     Pe(2,1) = weightGE*(Pez(2,1,1) + Pez(2,1,2)) + weightBE*(Pez(2,1,3) + Pez(2,1,4))
     Pe(2,2) = weightGE*(Pez(2,2,1) + Pez(2,2,2)) + weightBE*(Pez(2,2,3) + Pez(2,2,4))
-    ! Ge = (/0.150000000000000, 1.06397849462366/)
-    ! Pe(1,:) = (/0.507440476190476, 0.492559523809524/)
-    ! Pe(2,:) = (/3.707437275985664E-002, 0.962925627240143/)
-    print *, Ge
-    print *, Pe(1,:), sum(Pe(1,:))
-    print *, Pe(2,:), sum(Pe(2,:))
-    ! pause
 
     ! stationary distribution for exogenous grid
     muez(1,:) = (/ug, ub/)
@@ -150,20 +121,18 @@ program solveXpa
 
     ! mux = (1.0d0-FractionZb)*muxz(:,1) + FractionZb*muxz(:,2)
     mux = calcmu(Pe)
-    print *, calcmu(Pez(:,:,1)/pgg)
-    print *, calcmu(Pez(:,:,2)/(1.0d0-pgg))
-    print *, calcmu(Pez(:,:,3)/(1.0d0-pbb))
-    print *, calcmu(Pez(:,:,4)/pbb)
-    print *, uss, 1.0d0-uss
-    print *, mux
+    ! transition matrices are consistent with time-varying employment rates
+    ! print *, calcmu(Pez(:,:,1)/pgg)
+    ! print *, calcmu(Pez(:,:,2)/(1.0d0-pgg))
+    ! print *, calcmu(Pez(:,:,3)/(1.0d0-pbb))
+    ! print *, calcmu(Pez(:,:,4)/pbb)
+    ! print *, uss, 1.0d0-uss
+    ! print *, mux
     ! pause
 
     print *, 'Calculating the steady state'
     znow = 1.0d0
-    ! lnow = Ge(1)*mux(1)+Ge(2)*mux(2) !h*(1.0d0-uss)
     lnow = h*(1.0d0-uss)
-    print *, lnow
-    ! pause
     call calcss(knotsk,knotsb,invTk,znow,lnow,Ge,Gy,Gd,Pe,Py,Pd,idmat,muxz,vmatss,gmatss,muss,evec,mpmat)
     mu0 = muss
     call calcdiststat(knotsb,mu0,ThresholdWvec,ShareWvec,gini)

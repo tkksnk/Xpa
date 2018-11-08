@@ -1,9 +1,6 @@
 module mod_calcss
 
 
-! #ifdef MATLAB_MEX_FILE
-! USE INTERRUPTEXECUTION
-! #endif
 use mod_functions
 use mod_spline
 implicit none
@@ -24,13 +21,6 @@ subroutine calcss(knotsk,knotsb,invTk,Ge,Pe,mue,vmat0,gmat0,mu0,evec,mpmat,ymat,
     real(8) mnow, know, vcond(nk), cf(4,rk+1), enow, kwnow, f0, df0, d2f0, e0now, klow, khigh, kcnow, f1, df1, d2f1, e1now, xinow, alpha, mp, yterm, nnow, ynow, inow, cnow
     real(8) mpvec(ne), yvec(ne), cvec(ne), p1, eptime
 
-! #ifdef MATLAB_MEX_FILE
-!     integer, external :: mexPrintf
-!     integer k
-!     character(len=240) line
-!     LOGICAL :: INTERRUPTED
-! #endif
-
 
     call system_clock(ct1,cr)
 
@@ -46,24 +36,11 @@ subroutine calcss(knotsk,knotsb,invTk,Ge,Pe,mue,vmat0,gmat0,mu0,evec,mpmat,ymat,
         call driver(wL,znow,knotsk,knotsb,invTk,Ge,Pe,0,wLnew,mpmat,ymat,nmat,vmat0,gmat0,gwmat0,gcmat0,mu0)
         BL = wL-wLnew
         print *, BL
-! #ifdef MATLAB_MEX_FILE
-!     	INTERRUPTED = utIsInterruptPendingInFortran()
-!     	IF (INTERRUPTED) RETURN
-!         write(line,*) BL
-!         k = mexPrintf(line//achar(10))
-! #endif
 
     	wH = 1.10d0
         call driver(wH,znow,knotsk,knotsb,invTk,Ge,Pe,0,wHnew,mpmat,ymat,nmat,vmat0,gmat0,gwmat0,gcmat0,mu0)
         BH = wH-wHnew
         print *, BH
-        ! pause
-! #ifdef MATLAB_MEX_FILE
-!     	INTERRUPTED = utIsInterruptPendingInFortran()
-!     	IF (INTERRUPTED) RETURN
-!         write(line,*) BH
-!         k = mexPrintf(line//achar(10))
-! #endif
 
     	diff = 1e+4
     	iter = 0
@@ -72,10 +49,6 @@ subroutine calcss(knotsk,knotsb,invTk,Ge,Pe,mue,vmat0,gmat0,mu0,evec,mpmat,ymat,
 
     	    w0 = (wL+wH)/2.0d0
             call driver(w0,znow,knotsk,knotsb,invTk,Ge,Pe,iter,w1,mpmat,ymat,nmat,vmat0,gmat0,gwmat0,gcmat0,mu0)
-! #ifdef MATLAB_MEX_FILE
-!         	INTERRUPTED = utIsInterruptPendingInFortran()
-!         	IF (INTERRUPTED) RETURN
-! #endif
     	    B0 = w0-w1
 
     	    if (B0*BL>0.0d0) then
@@ -88,14 +61,8 @@ subroutine calcss(knotsk,knotsb,invTk,Ge,Pe,mue,vmat0,gmat0,mu0,evec,mpmat,ymat,
     	    diff = wH-wL
     	    iter = iter + 1
 
-! #ifdef MATLAB_MEX_FILE
-!             write(line,"('  bisection ', I3, '  wH-wL = ', F10.5)") iter, diff
-!     		k = mexPrintf(line//achar(10))
-!     		call mexEvalString("drawnow")
-! #else
             write(*,"('  bisection ', I3, '  wH-wL = ', F10.5)") iter, diff
             print *, B0
-! #endif
 
     	end do
 
@@ -108,21 +75,11 @@ subroutine calcss(knotsk,knotsb,invTk,Ge,Pe,mue,vmat0,gmat0,mu0,evec,mpmat,ymat,
         do while (diff>critbp)
 
             call driver(w0,znow,knotsk,knotsb,invTk,Ge,Pe,iter,w1,mpmat,ymat,nmat,vmat0,gmat0,gwmat0,gcmat0,mu0)
-! #ifdef MATLAB_MEX_FILE
-!             INTERRUPTED = utIsInterruptPendingInFortran()
-!             IF (INTERRUPTED) RETURN
-! #endif
 
             diff = abs(log(w1)-log(w0))
             iter = iter + 1
 
-! #ifdef MATLAB_MEX_FILE
-!             write(line,"('  iteration ', I3, '  w1-w0 = ', F10.5)") iter, diff
-!             k = mexPrintf(line//achar(10))
-!             call mexEvalString("drawnow")
-! #else
             write(*,"('  iteration ', I3, '  w1-w0 = ', F10.5)") iter, diff
-! #endif
 
             ! updating price
             w0 = dampss*w1 + (1.0d0-dampss)*w0
@@ -146,75 +103,47 @@ subroutine calcss(knotsk,knotsb,invTk,Ge,Pe,mue,vmat0,gmat0,mu0,evec,mpmat,ymat,
 
         end do
 
-        ! enow = Ge(ie)
         cfmate(:,:,ie) = spfit(invTk,vcond,rk,knotsk)
 
     end do
 
-    ! diff = 1d+4
-    ! iter = 0
-    !
-    ! do while (diff>critbp)
+    do ie = 1,ne
 
-        do ie = 1,ne
+        ! explicit aggregation: aggregate capital indexed by individual productivity
+        if (naiveflag) then
+            know = mnow
+        else
+            know = sum(knotsb*mu0(:,ie),1)/sum(mu0(:,ie),1)
+        end if
 
-            ! explicit aggregation: aggregate capital indexed by individual productivity
-            if (naiveflag) then
-                know = mnow
-            else
-                know = sum(knotsb*mu0(:,ie),1)/sum(mu0(:,ie),1)
-            end if
+        enow = Ge(ie)
+        cf = cfmate(:,:,ie)
 
-            enow = Ge(ie)
-            cf = cfmate(:,:,ie)
-            ! vcond = 0.0d0
-            ! do je = 1,ne
-            !
-            !     vcond = vcond + Pe(ie,je)*reshape(vmat0(:,je),(/nk/))
-            !
-            ! end do
-            !
-            ! enow = Ge(ie)
-            ! cf = spfit(invTk,vcond,rk,knotsk)
+        call gss(knotsk(1),knotsk(nk),kwnow,cf,knotsk,p0)
+        call vfuncsp(kwnow,cf,knotsk,p0,f0,df0,d2f0)
+        e0now = -f0
 
-            call gss(knotsk(1),knotsk(nk),kwnow,cf,knotsk,p0)
-            call vfuncsp(kwnow,cf,knotsk,p0,f0,df0,d2f0)
-            e0now = -f0
+        klow  = (1.0d0-DELTA-B)/GAMY*know
+        khigh = (1.0d0-DELTA+B)/GAMY*know
+        call gss(klow,khigh,kcnow,cf,knotsk,p0)
+        call vfuncsp(kcnow,cf,knotsk,p0,f1,df1,d2f1)
+        e1now = -f1
 
-            klow  = (1.0d0-DELTA-B)/GAMY*know
-            khigh = (1.0d0-DELTA+B)/GAMY*know
-            call gss(klow,khigh,kcnow,cf,knotsk,p0)
-            call vfuncsp(kcnow,cf,knotsk,p0,f1,df1,d2f1)
-            e1now = -f1
+        xinow = min(XIBAR,max(0.0d0,(e0now-e1now)/ETA))
+        alpha = xinow/XIBAR
 
-            xinow = min(XIBAR,max(0.0d0,(e0now-e1now)/ETA))
-            alpha = xinow/XIBAR
+        mp = alpha*kwnow + (1.0d0-alpha)*kcnow
+        yterm = enow*know**THETA
+        nnow = (NU*yterm/w0)**(1.0d0/(1.0d0-NU))
+        ynow = yterm*nnow**NU
+        inow = GAMY*(alpha*kwnow + (1.0d0-alpha)*kcnow) - (1.0d0-DELTA)*know
+        cnow = ynow - inow
 
-            mp = alpha*kwnow + (1.0d0-alpha)*kcnow
-            yterm = enow*know**THETA
-            nnow = (NU*yterm/w0)**(1.0d0/(1.0d0-NU))
-            ynow = yterm*nnow**NU
-            inow = GAMY*(alpha*kwnow + (1.0d0-alpha)*kcnow) - (1.0d0-DELTA)*know
-            cnow = ynow - inow
+        mpvec(ie) = mp
+        yvec(ie) = ynow
+        cvec(ie) = cnow
 
-            mpvec(ie) = mp
-            yvec(ie) = ynow
-            cvec(ie) = cnow
-
-        end do
-
-    !     p1 = 1.0d0/sum(cvec*mue,1)
-    !
-    !     diff = abs(log(p1)-log(p0))
-    !     ! diff = abs(p1-p0)
-    !     iter = iter + 1
-    !
-    !     write(*,"('  iteration ', I3, '  p1-p0 = ', F10.5)") iter, diff
-    !
-    !     ! p0 = dampss*p1 + (1.0d0-dampss)*p0
-    !     p0 = 0.01d0*p1 + (1.0d0-0.01d0)*p0
-    !
-    ! end do
+    end do
 
     ! calculate the Jensen's inequality
     do ie = 1,ne
@@ -250,13 +179,6 @@ subroutine driver(w0,znow,knotsk,knotsb,invTk,Ge,Pe,iterout,w1,mpmat,ymat,nmat,v
     real(8) G(nb,ne,3), wb1(ne), a1(nb,ne), wb2(nb,ne), inow, imat(nb,ne), ikmat(nb,ne), mu1(nb,ne)
 
     real(8) time_begin, time_end, eptime
-
-! #ifdef MATLAB_MEX_FILE
-!     integer, external :: mexPrintf
-!     integer k
-!     character(len=240) line
-!     LOGICAL :: INTERRUPTED
-! #endif
 
 
     call system_clock(ct1,cr)
@@ -374,19 +296,10 @@ subroutine driver(w0,znow,knotsk,knotsb,invTk,Ge,Pe,iterout,w1,mpmat,ymat,nmat,v
 
         ! diagnosis
         if (mod(iter,200)==0) then
-! #ifdef MATLAB_MEX_FILE
-!             write(line,"('  iteration ', I4, '  ||Tv-v|| = ', F10.5, '  ||Tg-g|| = ', F10.5)") iter, diffv, diffg
-! 			k = mexPrintf(line//achar(10))
-! 			call mexEvalString("drawnow")
-! #else
-            write(*,"('  iteration ', I4, '  ||Tv-v|| = ', F10.5, '  ||Tg-g|| = ', F10.5)") iter, diffv, diffg
-! #endif
-        end if
 
-! #ifdef MATLAB_MEX_FILE
-! 			INTERRUPTED = utIsInterruptPendingInFortran()
-! 			IF (INTERRUPTED) RETURN
-! #endif
+            write(*,"('  iteration ', I4, '  ||Tv-v|| = ', F10.5, '  ||Tg-g|| = ', F10.5)") iter, diffv, diffg
+
+        end if
 
         if (diffgw<1d-4 .and. s1==0) then
             s1 = 1
@@ -557,19 +470,10 @@ subroutine driver(w0,znow,knotsk,knotsb,invTk,Ge,Pe,iterout,w1,mpmat,ymat,nmat,v
 
         ! diagnosis
         if (mod(iter,200)==0) then
-! #ifdef MATLAB_MEX_FILE
-!             write(line,"('  iteration ', I6, '  ||mu1-mu0|| = ', F15.10)") iter, diff
-! 			k = mexPrintf(line//achar(10))
-! 			call mexEvalString("drawnow")
-! #else
-            write(*,"('  iteration ', I6, '  ||mu1-mu0|| = ', F15.10)") iter, diff
-! #endif
-        end if
 
-! #ifdef MATLAB_MEX_FILE
-! 			INTERRUPTED = utIsInterruptPendingInFortran()
-! 			IF (INTERRUPTED) RETURN
-! #endif
+            write(*,"('  iteration ', I6, '  ||mu1-mu0|| = ', F15.10)") iter, diff
+
+        end if
 
         ! update distribution
         mu0 = mu1

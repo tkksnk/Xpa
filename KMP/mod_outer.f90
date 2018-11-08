@@ -1,9 +1,6 @@
 module mod_outer
 
 
-#ifdef MATLAB_MEX_FILE
-USE INTERRUPTEXECUTION
-#endif
 use mod_functions
 use mod_spline
 use mod_inner
@@ -76,7 +73,6 @@ subroutine outer(vmat0,gmat0,mpmat0,knotsk,knotsm,invTk,invTm,Gz,Gl,Pz,Gez,Gy,Gd
     integer i, ix, jx, ie, je, iy, jy, id, jd, iz, im, jm, c1, c2, cr
 
 
-    ! print *, 'OUTER LOOP'
     call system_clock(c1,cr)
 
     if (linflag) then
@@ -200,8 +196,6 @@ subroutine outer(vmat0,gmat0,mpmat0,knotsk,knotsm,invTk,invTm,Gz,Gl,Pz,Gez,Gy,Gd
                 end if
 
                 ! end-of-period distribution
-                ! NOTE: why THETA multiplied?
-                ! mpvec(ix) = kp + evec(ix,iz)
                 mpvec(ix) = kp*THETA + evec(ix,iz) ! only THETA fraction will be active
 
             end do
@@ -236,15 +230,7 @@ subroutine simulation(vmat0,gmat0,mpmat0,knotsk,knotsm,knotsb,invTk,invTm,Gz,Gl,
     integer ThresholdWvec(7)
     real(8) ShareWvec(8), gini
 
-#ifdef MATLAB_MEX_FILE
-    integer, external :: mexPrintf
-    integer k
-    character(len=240) line
-    LOGICAL :: INTERRUPTED
-#endif
 
-
-    ! print *, 'SIMULATION'
     call system_clock(c1,cr)
 
     if (linflag) then
@@ -305,7 +291,7 @@ subroutine simulation(vmat0,gmat0,mpmat0,knotsk,knotsm,knotsb,invTk,invTm,Gz,Gl,
     end if
 
     tott = size(izvec,1)
-    do tt = 1,tott !simT+drop
+    do tt = 1,tott
 
         iz = izvec(tt)    ! index of z
         jz = izvec(tt+1)  ! index of z'
@@ -428,14 +414,10 @@ subroutine simulation(vmat0,gmat0,mpmat0,knotsk,knotsm,knotsb,invTk,invTm,Gz,Gl,
                         jy = idmat(jx,2)
                         jd = idmat(jx,3)
 
-                        ! if (id==jd) then
-
-                            mu1(kb(ib,ix),jx)   = mu1(kb(ib,ix),jx)   + mu0(ib,ix)*wb(ib,ix)*Pe(ie,je)*Py(iy,jy)*Pd(id,jd)*THETA
-                            mu1(kb(ib,ix)+1,jx) = mu1(kb(ib,ix)+1,jx) + mu0(ib,ix)*(1.0d0-wb(ib,ix))*Pe(ie,je)*Py(iy,jy)*Pd(id,jd)*THETA
-                            ! newborns
-                            mu1(1,jx) = mu1(1,jx) + mu0(ib,ix)*Pe(ie,je)*Py(iy,jy)*Pd(id,jd)*(1.0d0-THETA)
-
-                        ! end if
+                        mu1(kb(ib,ix),jx)   = mu1(kb(ib,ix),jx)   + mu0(ib,ix)*wb(ib,ix)*Pe(ie,je)*Py(iy,jy)*Pd(id,jd)*THETA
+                        mu1(kb(ib,ix)+1,jx) = mu1(kb(ib,ix)+1,jx) + mu0(ib,ix)*(1.0d0-wb(ib,ix))*Pe(ie,je)*Py(iy,jy)*Pd(id,jd)*THETA
+                        ! newborns
+                        mu1(1,jx) = mu1(1,jx) + mu0(ib,ix)*Pe(ie,je)*Py(iy,jy)*Pd(id,jd)*(1.0d0-THETA)
 
                     end do
 
@@ -461,20 +443,10 @@ subroutine simulation(vmat0,gmat0,mpmat0,knotsk,knotsm,knotsb,invTk,invTm,Gz,Gl,
         disaggsim(tt,9) = gini
 
         if (mod(tt,diagnumout)==0) then
-#ifdef MATLAB_MEX_FILE
-            write(line,"('  time = ', I5, ': m =', F10.5, ' sum(mu) = ', F10.5)") tt, mnow, sum(sum(mu1,1),1)
-        	k = mexPrintf(line//achar(10))
-        	call mexEvalString("drawnow")
-#else
-            write(*,"('  time = ', I5, ': m =', F10.5, ' sum(mu) = ', F10.5)") tt, mnow, sum(sum(mu1,1),1)
-            ! print *, mp !, sum(mu1,1)
-#endif
-        end if
 
-#ifdef MATLAB_MEX_FILE
-			INTERRUPTED = utIsInterruptPendingInFortran()
-			IF (INTERRUPTED) RETURN
-#endif
+            write(*,"('  time = ', I5, ': m =', F10.5, ' sum(mu) = ', F10.5)") tt, mnow, sum(sum(mu1,1),1)
+
+        end if
 
         ! update distribution
         ! NOTE: normalization needed?

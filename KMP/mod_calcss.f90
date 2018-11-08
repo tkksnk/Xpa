@@ -1,9 +1,6 @@
 module mod_calcss
 
 
-#ifdef MATLAB_MEX_FILE
-USE INTERRUPTEXECUTION
-#endif
 use mod_functions
 use mod_spline
 use mkl_spblas
@@ -25,7 +22,6 @@ subroutine calcss(knotsk,knotsb,invTk,znow,lnow,Ge,Gy,Gd,Pe,Py,Pd,idmat,muxz,vma
     real(8) wb, mux(nx), muinit(nb,nx), m0, m1, diff, mL, mLnew, mH, mHnew, BL, BH, mnew, B0, rrnew
     real(8) vcond(nk), cf(4,rk+1), cfmate(4,rk+1,nx)
     real(8) beta, mnow, r0, w0, enow, ynow, know, yterm, klow, khigh, mp, df0, d2f0, mpvec(nx), eptime
-    ! real(8) rL, rH, r1, w1, mvec(101), rvec(101), wvec(101), Bvec(101)
 
 
     call system_clock(ct1,cr)
@@ -79,8 +75,6 @@ subroutine calcss(knotsk,knotsb,invTk,znow,lnow,Ge,Gy,Gd,Pe,Py,Pd,idmat,muxz,vma
         ! mu0(ib,ix)   = wb*mux(ix)
         ! mu0(ib+1,ix) = (1.0d0-wb)*mux(ix)
     end do
-    ! print *, sum(mu0,1)
-    ! pause
     ! muinit = mu0
 
     if (bisectm) then
@@ -99,7 +93,6 @@ subroutine calcss(knotsk,knotsb,invTk,znow,lnow,Ge,Gy,Gd,Pe,Py,Pd,idmat,muxz,vma
         call driverm(mH,znow,lnow,knotsk,knotsb,invTk,Ge,Gy,Gd,Pe,Py,Pd,idmat,0,mHnew,mpmat,vmat0,gmat0,mu0)
     	BH = mH-mHnew
         print *, BH
-        ! pause
 
         m0 = (mL+mH)/2.0d0
     	diff = 1e+4
@@ -120,7 +113,6 @@ subroutine calcss(knotsk,knotsb,invTk,znow,lnow,Ge,Gy,Gd,Pe,Py,Pd,idmat,muxz,vma
     	    end if
 
             diff = abs(log(m1)-log(m0))
-    	    ! diff = abs(log(mH)-log(mL))
 
             ! write(*,"('  bisection ', I3, '  mH-mL = ', F10.5)") iter, diff
             write(*,"('  bisection ', I3, '  diff = ', F10.5, '  m0 = ', F10.5, '  m1 = ', F10.5)") iter, diff, m0, m1
@@ -259,7 +251,6 @@ subroutine driverm(m0,znow,lnow,knotsk,knotsb,invTk,Ge,Gy,Gd,Pe,Py,Pd,idmat,iter
     integer iter, s1, ik, ix, jx, ie, je, iy, jy, id, jd, ib, jb, kb(nb,nx), ct1, ct2, cr
     integer SOLVE(nb,nx)
     real(8) wb(nb,nx), G(nb,nx), mu1(nb,nx), temp(nb*nx)
-    ! real(8) wb(nb,nx), G(nb,nx), mu1(nb,nx), mub(nb), mue(ne), muy(ny), mud(nd), AA(nb*nx,nb*nx), temp(nb*nx)
     real(8), allocatable :: aa(:,:)
     ! for mkl_spblas
     integer, allocatable :: csrColInd(:)
@@ -352,7 +343,9 @@ subroutine driverm(m0,znow,lnow,knotsk,knotsb,invTk,Ge,Gy,Gd,Pe,Py,Pd,idmat,iter
 
         ! diagnosis
         if (mod(iter,diagnum)==0) then
+
             write(*,"('  iteration ', I4, '  ||Tv-v|| = ', F10.5, '  ||Tg-g|| = ', F10.5)") iter, diffv, diffg
+
         end if
 
         if (diffg<1d-4 .and. s1==0) then
@@ -517,7 +510,6 @@ subroutine driverm(m0,znow,lnow,knotsk,knotsb,invTk,Ge,Gy,Gd,Pe,Py,Pd,idmat,iter
             if (mod(iter,500)==0) then
 
                 write(*,"('  iteration ', I6, '  ||mu1-mu0|| = ', F15.5, ' sum(mu1) = ', F15.5)") iter, diff, sum(sum(mu1,1),1)
-                ! write(*,"('  iteration ', I6, '  ||mu1-mu0|| = ', F20.15, ' sum(mu1) = ', F20.15)") iter, diff, sum(sum(mu1,1),1)
 
             end if
 
@@ -570,8 +562,6 @@ subroutine driverm(m0,znow,lnow,knotsk,knotsb,invTk,Ge,Gy,Gd,Pe,Py,Pd,idmat,iter
 
         end do
         !$omp end parallel do
-
-        ! print *, 'here'
 
         ! allocate(aa(nb*nx,nb*nx))
         ! AA = 0.0d0
@@ -627,9 +617,6 @@ subroutine driverm(m0,znow,lnow,knotsk,knotsb,invTk,Ge,Gy,Gd,Pe,Py,Pd,idmat,iter
             end do
 
         end do
-
-        ! print *, 'here'
-        ! pause
 
         csrRowPtr(nb*nx+1) = index+1
         !   Create CSR matrix
@@ -980,7 +967,6 @@ subroutine eig(AA,mu0)
     real(8), intent(in) :: AA(:,:)
     real(8), intent(out) :: mu0(:,:)
     integer info, lda, ldvr, lwork, n, nb, nx
-    ! integer lda, ldvr, lwork
     integer, parameter :: nblock = 2048
     ! .. Local Arrays ..
     real(8), allocatable :: vr(:,:), wi(:), work(:), wr(:)

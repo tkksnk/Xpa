@@ -1,9 +1,6 @@
 module mod_inner
 
 
-#ifdef MATLAB_MEX_FILE
-USE INTERRUPTEXECUTION
-#endif
 use mod_functions
 use mod_spline
 implicit none
@@ -27,15 +24,7 @@ subroutine inner(mpmat,knotsk,knotsm,invTk,invTm,Gz,Gl,Pz,Gez,Gy,Gd,Pez,Py,Pd,id
     integer iter, s1
     integer ik, im, jm, ix, jx, ie, iy, id, je, jy, jd, iz, c1, c2, cr, ii
 
-#ifdef MATLAB_MEX_FILE
-    integer, external :: mexPrintf
-    integer k
-    character(len=240) line
-    LOGICAL :: INTERRUPTED
-#endif
 
-
-    ! print *, 'INNER LOOP'
     call system_clock(c1,cr)
 
     ! initial guess for the value function
@@ -102,8 +91,6 @@ subroutine inner(mpmat,knotsk,knotsm,invTk,invTm,Gz,Gl,Pz,Gez,Gy,Gd,Pez,Py,Pd,id
                     prob = prob + Py(iy,jy)*Pd(id,jd)*(Pez(ie,je,2*(iz-1)+1) + Pez(ie,je,2*(iz-1)+2))
 
                 end do
-                ! print *, prob
-                ! pause
 
                 if (linflag .eqv. .false.) cfmat = spfit2(invTk,invTm,vcond,rk,rm,knotsk,knotsm)
 
@@ -169,19 +156,10 @@ subroutine inner(mpmat,knotsk,knotsm,invTk,invTm,Gz,Gl,Pz,Gez,Gy,Gd,Pez,Py,Pd,id
         iter  = iter + 1
         ! diagnosis
         if (mod(iter,diagnum)==0) then
-#ifdef MATLAB_MEX_FILE
-            write(line,"('  iteration ', I4, '  ||Tv-v|| = ', F10.5, '  ||Tg-g|| = ', F10.5)") iter, diffv, diffg
-			k = mexPrintf(line//achar(10))
-			call mexEvalString("drawnow")
-#else
-            write(*,"('  iteration ', I4, '  ||Tv-v|| = ', F10.5, '  ||Tg-g|| = ', F10.5)") iter, diffv, diffg
-#endif
-        end if
 
-#ifdef MATLAB_MEX_FILE
-			INTERRUPTED = utIsInterruptPendingInFortran()
-			IF (INTERRUPTED) RETURN
-#endif
+            write(*,"('  iteration ', I4, '  ||Tv-v|| = ', F10.5, '  ||Tg-g|| = ', F10.5)") iter, diffv, diffg
+
+        end if
 
         if (diffg<1d-4 .and. s1==0) then
            s1 = 1

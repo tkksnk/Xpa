@@ -21,13 +21,6 @@ subroutine outer(vmat0,mpmat0,knotsk,knotsm,invTk,invTm,Gz,Pz,Ge,Pe,psie,mue,eve
     real(8) mpvec(ne), yvec(ne), Kagg, Kpagg, Yagg, Cagg, Iagg
     integer im, iz, jz, ie, je, iterbp, ct1, ct2, cr, error
 
-#ifdef MATLAB_MEX_FILE
-    integer, external :: mexPrintf
-    integer k
-    character(len=80) line
-    LOGICAL :: INTERRUPTED
-#endif
-
 
     call system_clock(ct1, cr)
 
@@ -122,7 +115,7 @@ subroutine outer(vmat0,mpmat0,knotsk,knotsm,invTk,invTm,Gz,Pz,Ge,Pe,psie,mue,eve
             ! write(*,"('  at (z,m) = (', F8.5, ',', F8.5, ') : pnow = ', F8.5, ', pl = ', F8.5)") znow, mnow, p1, plow
 
             ! NOTE: weighted average over e
-            ! BUG: these two yield different results!
+            ! BUG: these two yield different results?
             mpmat1(im,iz) = Kpagg
             pmat1(im,iz)  = 1.0d0/Cagg
             ! mpmat1(im,iz) = Kpagg + sum(evec(:,1)*mue,1)
@@ -148,7 +141,6 @@ subroutine pricemap(p0,znow,mnow,mp,knotsk,knotsm,Ge,Pe,psie,mue,evec,cfmate,p1,
     use mod_parameters
     real(8), intent(in) :: p0, znow, mnow, mp, knotsk(:), knotsm(:), Ge(:), Pe(:,:), psie(:), mue(:), evec(:,:), cfmate(:,:,:,:)
     real(8), intent(out) :: p1, mpvec(:), yvec(:)
-!    integer, intent(out) :: error
     real(8) w0, enow, know, yterm, nnow, ynow, inow, klow, khigh
     real(8) kwnow, f0, df0, d2f0, e0now, kcnow, f1, df1, d2f1, e1now, xinow, alpha, Kpagg, Nagg, Yagg, Iagg, Cagg
     real(8) nvec(ne), ivec(ne), cfmat(16,rk+1,rm+1)
@@ -156,7 +148,6 @@ subroutine pricemap(p0,znow,mnow,mp,knotsk,knotsm,Ge,Pe,psie,mue,evec,cfmate,p1,
 
 
     w0 = ETA/p0
-!    error = 0
 
     !omp parallel do private(enow,cfmat,kwnow,e0now,know,klow,khigh,kcnow,e1now,xinow,alpha,yterm,nnow,ynow,inow)
     do ie = 1,ne
@@ -178,7 +169,7 @@ subroutine pricemap(p0,znow,mnow,mp,knotsk,knotsm,Ge,Pe,psie,mue,evec,cfmate,p1,
         end if
 
         call vfuncsp2(kwnow,cfmat,knotsk,knotsm,mp,p0,f0,df0,d2f0)
-        e0now = -f0 !-vfuncsp2(kwnow,cfmat,knotsk,knotsm,mp,p0)
+        e0now = -f0
 
         if (B==0.0d0) then
 
@@ -197,7 +188,7 @@ subroutine pricemap(p0,znow,mnow,mp,knotsk,knotsm,Ge,Pe,psie,mue,evec,cfmate,p1,
         end if
 
         call vfuncsp2(kcnow,cfmat,knotsk,knotsm,mp,p0,f1,df1,d2f1)
-        e1now = -f1 !-vfuncsp2(kcnow,cfmat,knotsk,knotsm,mp,p0)
+        e1now = -f1
 
         xinow = min(XIBAR, max(0.0d0,(e0now-e1now)/ETA))
         alpha = xinow/XIBAR
@@ -215,7 +206,7 @@ subroutine pricemap(p0,znow,mnow,mp,knotsk,knotsm,Ge,Pe,psie,mue,evec,cfmate,p1,
     end do
     !omp end parallel do
 
-    ! bias correction during market clearing
+    ! NOTE: bias correction during market clearing
     if (naiveflag) then
         mpvec = mpvec + sum(mue*evec(:,1),1)
         yvec = yvec + sum(mue*evec(:,2),1)
@@ -225,7 +216,6 @@ subroutine pricemap(p0,znow,mnow,mp,knotsk,knotsm,Ge,Pe,psie,mue,evec,cfmate,p1,
     end if
 
     Kpagg = sum((mpvec*mue),1)
-!    Nagg = sum((nvec*mue),1)
     Yagg = sum((yvec*mue),1)
     Iagg = GAMY*Kpagg - (1.0d0-DELTA)*mnow
     Cagg = Yagg-Iagg

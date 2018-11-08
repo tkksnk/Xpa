@@ -21,7 +21,6 @@ program solveXpa
     real(8) vmat0(nk,nm,nz,ne), gmat0(nk,nm,nz,ne)
     real(8) diff, diffmp, diffp, eptimein, eptimeout, eptime, epvec(100,2)
     real(8) cumPz(nz,nz), rand, aggsim(simT+drop,8), disaggsim(simT+drop,7)
-    ! real(8) Kvec(simT+drop), Cvec(simT+drop), wm, cnow, mvec(simT+drop), pvec(simT+drop), DHmax(nz,2), DHmean(nz,2)
     integer izvec(simT+drop)
     integer seedsize
     integer, allocatable :: seed(:)
@@ -58,12 +57,10 @@ program solveXpa
     end if
 
     kbounds = (/0.1d0, 5.0d0/)
-    ! kbounds = (/0.1d0, 8.0d0/)
 
     knotsk = logspace(log(kbounds(1)-kbounds(1)+1.0d0)/log(10.0d0), log(kbounds(2)-kbounds(1)+1.0d0)/log(10.0d0), nk)
     knotsk = knotsk + (kbounds(1) - 1.0d0)
     knotsb = linspace(kbounds(1), kbounds(2), nb)
-
     invTk = spbas(rk,knotsk)
     call dgetrf(rk,rk,invTk,rk,IPIVk,INFO)
     call dgetri(rk,invTk,rk,IPIVk,WORKk,rk,INFO)
@@ -84,39 +81,8 @@ program solveXpa
     psie = psie/mnow
     print *, evec, psie, mnow
 
-    ! open(100, file="mu0.txt")
-    ! open(101, file="mpmat.txt")
-    ! open(102, file="ymat.txt")
-    ! open(103, file="nmat.txt")
-    !
-    ! do ie = 1,ne
-    !     do ib = 1,nb
-    !
-    !         write(100, *) mu0(ib,ie)
-    !         write(101, *) mpmat(ib,ie)
-    !         write(102, *) ymat(ib,ie)
-    !         write(103, *) nmat(ib,ie)
-    !
-    !     end do
-    ! end do
-    !
-    ! open(110, file="knotsb.txt")
-    ! do ib = 1,nb
-    !
-    !     write(110, *) knotsb(ib)
-    !     ! read(110, *)  knotsb(ib)
-    !
-    ! end do
-    !
-    ! close(100)
-    ! close(101)
-    ! close(102)
-    ! close(103)
-    ! close(110)
-
     mbounds = (/0.75d0*mnow, 1.25d0*mnow/)
-    ! mbounds = (/0.85d0, 1.65d0/)
-    ! mbounds = (/1.25d0, 2.0d0/)
+
     knotsm = linspace(mbounds(1), mbounds(2), nm)
     invTm = spbas(rm,knotsm)
     call dgetrf(rm,rm,invTm,rm,IPIVm,INFO)
@@ -125,10 +91,8 @@ program solveXpa
     print *, 'Solving the planner''s problem'
     call solvepl(knotsk,invTk,Gz,Pz,gmatpl,nmatpl,vmatpl)
     call forecastpl(nmatpl,knotsk,knotsm,Gz,mpmat0,pmat0)
-    ! print *, mpmat0
 
 
-    ! vmat0 = 0.0d0
     diff = 1d+4
     iter = 0
 
@@ -182,7 +146,7 @@ program solveXpa
     print *, 'Simulating the lumpy model'
     call simulation(vmat0,mpmat0,pmat0,knotsk,knotsm,knotsb,invTk,invTm,Gz,Pz,Ge,Pe,izvec,aggsim,disaggsim,mu0,eptimeout)
 
-    ! the i/o of data will be replaced by json
+
     ! output via json
     if (jsonoutput) then
 

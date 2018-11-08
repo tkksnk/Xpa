@@ -21,7 +21,7 @@ program solveKS
     real(8) diff, diffmp, diffp, eptimein, eptimeout, eptime, epvec(100,2)
     real(8) BetaK(nz,2), Betap(nz,2), R2(nz,2)
     real(8) cumPz(nz,nz), rand, aggsim(simT+drop,8), disaggsim(simT+drop,7)
-    real(8) Kvec(simT+drop), Cvec(simT+drop) !, wm, cnow, mvec(simT+drop), pvec(simT+drop), DHmax(nz,2), DHmean(nz,2)
+    real(8) Kvec(simT+drop), Cvec(simT+drop)
     integer izvec(simT+drop)
     integer seedsize
     integer, allocatable :: seed(:)
@@ -58,12 +58,10 @@ program solveKS
     end if
 
     kbounds = (/0.1d0, 5.0d0/)
-    ! kbounds = (/0.1d0, 8.0d0/)
 
     knotsk = logspace(log(kbounds(1)-kbounds(1)+1.0d0)/log(10.0d0), log(kbounds(2)-kbounds(1)+1.0d0)/log(10.0d0), nk)
     knotsk = knotsk + (kbounds(1) - 1.0d0)
     knotsb = linspace(kbounds(1), kbounds(2), nb)
-
     invTk = spbas(rk,knotsk)
     call dgetrf(rk,rk,invTk,rk,IPIVk,INFO)
     call dgetri(rk,invTk,rk,IPIVk,WORKk,rk,INFO)
@@ -73,36 +71,6 @@ program solveKS
     muss = mu0
     call calcdiststat(knotsb,mu0,mpmat,ikvec)
     if (adjbias .eqv. .false.) evec = 0.0d0
-
-    ! open(100, file="mu0.txt")
-    ! open(101, file="mpmat.txt")
-    ! open(102, file="ymat.txt")
-    ! open(103, file="nmat.txt")
-    !
-    ! do ie = 1,ne
-    !     do ib = 1,nb
-    !
-    !         write(100, *) mu0(ib,ie)
-    !         write(101, *) mpmat(ib,ie)
-    !         write(102, *) ymat(ib,ie)
-    !         write(103, *) nmat(ib,ie)
-    !
-    !     end do
-    ! end do
-    !
-    ! open(110, file="knotsb.txt")
-    ! do ib = 1,nb
-    !
-    !     write(110, *) knotsb(ib)
-    !     ! read(110, *)  knotsb(ib)
-    !
-    ! end do
-    !
-    ! close(100)
-    ! close(101)
-    ! close(102)
-    ! close(103)
-    ! close(110)
 
     ! fraction of e-indexed capital
     mnow = 0.0d0
@@ -115,8 +83,7 @@ program solveKS
     ! pause
 
     mbounds = (/0.75d0*mnow, 1.25d0*mnow/)
-    ! mbounds = (/0.85d0, 1.65d0/)
-    ! mbounds = (/1.25d0, 2.0d0/)
+
     knotsm = linspace(mbounds(1), mbounds(2), nm)
     invTm = spbas(rm,knotsm)
     call dgetrf(rm,rm,invTm,rm,IPIVm,INFO)
@@ -151,21 +118,10 @@ program solveKS
         call random_number(rand)
         izvec(tt+1) = count(rand-cumPz(izvec(tt),:)>=0)
         izvec(tt+1) = min(izvec(tt+1)+1,nz)
-        !read(500, *) izvec(tt)
 
     end do
 
-    ! open(500, file="izvec.txt")
-    !
-    ! do tt = 1,simT+drop
-    !     write(500, *) izvec(tt)
-    !     ! read(500, *) izvec(tt)
-    ! end do
-    !
-    ! close(500)
 
-
-    ! vmat0 = 0.0d0
     diff = 1d+4
     iter = 0
 
@@ -199,6 +155,7 @@ program solveKS
     eptime = dble(ct2-ct1)/cr
     write(*,"('  Elasped time = ', F10.5)") eptime
     print *, sum(epvec(1:iter,:),1)/iter
+
 
     ! output via json
     if (jsonoutput) then
@@ -275,87 +232,6 @@ program solveKS
         call core%destroy(p)
 
     end if
-
-    ! open(500, file="izvec.txt")
-    ! open(511, file="Yvec.txt")
-    ! open(512, file="Zvec.txt")
-    ! open(513, file="Nvec.txt")
-    ! open(514, file="Cvec.txt")
-    ! open(515, file="Ivec.txt")
-    ! open(516, file="Kvec.txt")
-    !
-    ! do tt = 1,simT+drop
-    !     write(500, *) izvec(tt)
-    !     write(511, *) aggsim(tt,1)
-    !     write(512, *) aggsim(tt,2)
-    !     write(513, *) aggsim(tt,3)
-    !     write(514, *) aggsim(tt,4)
-    !     write(515, *) aggsim(tt,5)
-    !     write(516, *) aggsim(tt,6)
-    ! end do
-    !
-    ! open(520, file="knotsm.txt")
-    !
-    ! do im = 1,nm
-    !    write(520, *) knotsm(im)
-    ! end do
-    !
-    ! open(530, file="mpmat0.txt")
-    ! open(531, file="pmat0.txt")
-    !
-    ! do im = 1,nm
-    !     do iz = 1,nz
-    !         write(530, *) mpmat0(im,iz)
-    !         write(531, *) pmat0(im,iz)
-    !     end do
-    ! end do
-    !
-    ! close(510)
-    ! close(511)
-    ! close(512)
-    ! close(513)
-    ! close(514)
-    ! close(515)
-    ! close(516)
-    ! close(520)
-    ! close(530)
-    ! close(531)
-
-    ! print *, 'Den Haan statistics'
-    ! ! Kvec = aggsim(:,6)
-    ! ! Cvec = aggsim(:,4)
-    ! do tt = 1,simT+drop
-    !
-    !     iz = izvec(tt)
-    !     ! linear interpolation
-    !     ! im = gridlookup2(mnow,knotsm)
-    !     ! wm = (knotsm(im+1)-mnow)/(knotsm(im+1)-knotsm(im))
-    !     ! mp = wm*mpmat0(im,iz) + (1.0d0-wm)*mpmat0(im+1,iz)
-    !     ! cnow = 1.0d0/(wm*pmat0(im,iz) + (1.0d0-wm)*pmat0(im+1,iz))
-    !     ! log-linear interpolation
-    !     im = gridlookup2(log(mnow),log(knotsm))
-    !     wm = log(knotsm(im+1)/mnow)/log(knotsm(im+1)/knotsm(im))
-    !     mp = exp(wm*log(mpmat0(im,iz)) + (1.0d0-wm)*log(mpmat0(im+1,iz)))
-    !     cnow = 1.0d0/exp(wm*log(pmat0(im,iz)) + (1.0d0-wm)*log(pmat0(im+1,iz)))
-    !
-    !     mvec(tt) = mnow
-    !     pvec(tt) = 1.0d0/cnow
-    !     mnow = mp
-    !
-    ! end do
-    !
-    ! do iz = 1,nz
-    !
-    !     DHmax(iz,1)  = 100.0d0*maxval(abs(log(pack(mvec(drop+1:simT+drop), izvec(drop+1:simT+drop)==iz) / pack(Kvec(drop+1:simT+drop), izvec(drop+1:simT+drop)==iz) )),1)
-    !     DHmean(iz,1) = 100.0d0*sum(abs(log(pack(mvec(drop+1:simT+drop), izvec(drop+1:simT+drop)==iz)    / pack(Kvec(drop+1:simT+drop), izvec(drop+1:simT+drop)==iz) )),1)/simT
-    !     DHmax(iz,2)  = 100.0d0*maxval(abs(log(pack(pvec(drop+1:simT+drop), izvec(drop+1:simT+drop)==iz) * pack(Cvec(drop+1:simT+drop), izvec(drop+1:simT+drop)==iz) )),1)
-    !     DHmean(iz,2) = 100.0d0*sum(abs(log(pack(pvec(drop+1:simT+drop), izvec(drop+1:simT+drop)==iz)    * pack(Cvec(drop+1:simT+drop), izvec(drop+1:simT+drop)==iz) )),1)/simT
-    !
-    ! end do
-    ! write(*,"('  max for m''  ( ', F8.5, ', ', F8.5, ', ', F8.5, ', ', F8.5, ', ', F8.5, ') ')") DHmax(:,1)
-    ! write(*,"('  max for p   ( ', F8.5, ', ', F8.5, ', ', F8.5, ', ', F8.5, ', ', F8.5, ') ')") DHmax(:,2)
-    ! write(*,"('  mean for m'' ( ', F8.5, ', ', F8.5, ', ', F8.5, ', ', F8.5, ', ', F8.5, ') ')") DHmean(:,1)
-    ! write(*,"('  mean for p  ( ', F8.5, ', ', F8.5, ', ', F8.5, ', ', F8.5, ', ', F8.5, ') ')") DHmean(:,2)
 
 
 end program solveKS
