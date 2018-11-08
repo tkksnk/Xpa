@@ -21,6 +21,7 @@ program solveXpa
     real(8) vmat0(nk,nm,nz,ne), gmat0(nk,nm,nz,ne)
     real(8) diff, diffmp, diffp, eptimein, eptimeout, eptime, epvec(100,2)
     real(8) cumPz(nz,nz), rand, aggsim(simT+drop,8), disaggsim(simT+drop,7)
+    real(8) Zvec(irfTT), aggirf(irfTT,8), disaggirf(irfTT,7)
     integer izvec(simT+drop)
     integer seedsize
     integer, allocatable :: seed(:)
@@ -123,9 +124,6 @@ program solveXpa
     write(*,"('  Elasped time = ', F10.5)") eptime
     print *, sum(epvec(1:iter,:),1)/iter
 
-    print *, knotsm(1), knotsm(nm)
-    print *, minval(minval(mpmat0,1),1), maxval(maxval(mpmat0,1),1)
-    pause
 
     call random_seed(size=seedsize)
     allocate(seed(seedsize))
@@ -145,6 +143,17 @@ program solveXpa
 
     print *, 'Simulating the lumpy model'
     call simulation(vmat0,mpmat0,pmat0,knotsk,knotsm,knotsb,invTk,invTm,Gz,Pz,Ge,Pe,izvec,aggsim,disaggsim,mu0,eptimeout)
+
+
+    ! determine the path of TFP shock
+    Zvec(1:irfdrop+1) = 1.0d0
+    Zvec(irfdrop+2) = max(exp(RHO*log(Zvec(irfdrop+1))+shocksize),Gz(1))
+
+	do tt=irfdrop+2,irfTT-1
+        Zvec(tt+1) = exp(RHO*log(Zvec(tt)))
+    end do
+
+    call calcirf1(vmat0,mpmat0,pmat0,knotsk,knotsm,knotsb,invTk,invTm,Gz,Pz,Ge,Pe,Zvec,aggirf,disaggirf,mu0,eptimeout)
 
 
     ! output via json
@@ -202,7 +211,6 @@ program solveXpa
         call core%add(output, 'gmat0',  reshape(gmat0,(/nk*nm*nz*ne/)) )
         call core%add(output, 'mpmat0', reshape(mpmat0,(/nm*nz/)) )
         call core%add(output, 'pmat0',  reshape(pmat0,(/nm*nz/)) )
-
         call core%add(output, 'Yvec',   aggsim(:,1) )
         call core%add(output, 'Zvec',   aggsim(:,2) )
         call core%add(output, 'Nvec',   aggsim(:,3) )
@@ -218,10 +226,27 @@ program solveXpa
         call core%add(output, 'ikspikeneg', disaggsim(:,5) )
         call core%add(output, 'ikpos',      disaggsim(:,6) )
         call core%add(output, 'ikneg',      disaggsim(:,7) )
-
         call core%add(output, 'eptimein',   epvec(1:iter,1) )
         call core%add(output, 'eptimeout',  epvec(1:iter,2) )
         nullify(output)
+
+        call core%create_object(irf, 'irf')
+        call core%add(p, irf)
+        call core%add(irf, 'Yvec', aggirf(:,1) )
+        call core%add(irf, 'Zvec', aggirf(:,2) )
+        call core%add(irf, 'Nvec', aggirf(:,3) )
+        call core%add(irf, 'Cvec', aggirf(:,4) )
+        call core%add(irf, 'Ivec', aggirf(:,5) )
+        call core%add(irf, 'Kvec', aggirf(:,6) )
+        call core%add(irf, 'ikmean',     disaggirf(:,1) )
+        call core%add(irf, 'ikstddev',   disaggirf(:,2) )
+        call core%add(irf, 'ikinaction', disaggirf(:,3) )
+        call core%add(irf, 'ikspikepos', disaggirf(:,4) )
+        call core%add(irf, 'ikspikeneg', disaggirf(:,5) )
+        call core%add(irf, 'ikpos',      disaggirf(:,6) )
+        call core%add(irf, 'ikneg',      disaggirf(:,7) )
+        nullify(irf)
+
         call core%print(p, trim(jsonfilename))
         call core%destroy(p)
         print *, trim(jsonfilename)

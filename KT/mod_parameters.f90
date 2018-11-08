@@ -2,7 +2,7 @@
 
     integer, parameter :: diagnum = 200 ! for ss and inner loop
     integer, parameter :: diagnumout = 500 ! for outer loop
-    character(len=*), parameter :: jsonfilename = './results_extend_Xpa.json'
+    character(len=*), parameter :: jsonfilename = './results_traditional_KS.json'
     logical, parameter :: jsonoutput = .true.
 
     logical, parameter :: nraflag = .false. ! NOTE: in the inner loop, nra sometime doesn't work... in planner, nra doesn't work
@@ -40,15 +40,15 @@
     real(8), parameter :: THETA = 0.25648d0
     real(8), parameter :: ETA = 2.400d0
     ! for extended model (KT 2008)
-    real(8), parameter :: RHOE = 0.85904793659574d0
-    real(8), parameter :: SIGE = 0.022d0
-    real(8), parameter :: B = 0.011d0
-    real(8), parameter :: XIBAR = 0.00825d0 ! p. 426
+    ! real(8), parameter :: RHOE = 0.85904793659574d0
+    ! real(8), parameter :: SIGE = 0.022d0
+    ! real(8), parameter :: B = 0.011d0
+    ! real(8), parameter :: XIBAR = 0.00825d0 ! p. 426
     ! for traditional model (KT 2003)
-    ! real(8), parameter :: RHOE = 0.0d0 !0.85904793659574d0
-    ! real(8), parameter :: SIGE = 1d-6 !0.022d0
-    ! real(8), parameter :: B = 1d-6
-    ! real(8), parameter :: XIBAR = 0.014d0
+    real(8), parameter :: RHOE = 0.0d0 !0.85904793659574d0
+    real(8), parameter :: SIGE = 1d-6 !0.022d0
+    real(8), parameter :: B = 1d-6
+    real(8), parameter :: XIBAR = 0.014d0
     real(8), parameter :: shocksize = SIGMA
 
 ! inner/outer loop: critout>critin
@@ -58,6 +58,6 @@
     real(8), parameter :: critbn  = 1d-6
     real(8), parameter :: critg   = 1d-10
     real(8), parameter :: critn   = 1d-10
-    real(8), parameter :: critmu  = 1d-10 !1d-5
+    real(8), parameter :: critmu  = 1d-10
 
 end module mod_parameters
