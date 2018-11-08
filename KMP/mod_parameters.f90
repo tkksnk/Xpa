@@ -17,7 +17,10 @@
     integer, parameter :: congrid = 0
     real(8), parameter :: deggrid = 4.0d0
     real(8), parameter :: damp = 0.35d0 ! for new: better convergence than 0.4
-    real(8), parameter :: dampss = 0.001d0 !0.05d0 !0.005d0 ! for iterative method
+    ! for hety and KMP
+    ! real(8), parameter :: dampss = 0.05d0 ! for iterative method
+    ! for KS
+    real(8), parameter :: dampss = 0.005d0 ! for iterative method
     integer, parameter :: simT = 2000
     integer, parameter :: drop = 500
     integer, parameter :: simTT = simT+drop
@@ -34,7 +37,7 @@
     real(8), parameter :: kmax = 250.0d0 ! KS
     ! real(8), parameter :: kmax = 400.0d0 ! KS
     ! real(8), parameter :: kmax = 700.0d0 ! hety
-    ! real(8), parameter :: kmax = 2000.0d0 ! bench
+    ! real(8), parameter :: kmax = 2000.0d0 ! KMP
     integer, parameter :: nx = ne*ny*nd
     integer, parameter :: nb = 2001 ! NOTE: with KS calibration, kmax=200 and nb=5000 yields very different distribution
     integer, parameter :: rk = nk-2
@@ -59,7 +62,9 @@
     real(8), parameter :: pgg = (1.0d0-FractionZb*(2.0d0-pbb))/(1.0d0-FractionZb)
     ! NOTE: hours worked in steady state h*(1-uss) is normalized to one
     real(8), parameter :: uss = (1.0d0-FractionZb)*ug + FractionZb*ub
+    ! for KMP
     ! real(8), parameter :: mu = 0.5d0          ! unemployment insurance
+    ! for KS and hety
     real(8), parameter :: mu = 0.01d0         ! unemployment insurance
     real(8), parameter :: h = 1.0d0/(1.0d0-ub) ! hours worked per worker
     real(8), parameter :: taug = ug*mu/(h*(1-ug)+ug*mu)
