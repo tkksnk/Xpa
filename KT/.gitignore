@@ -1,7 +1,6 @@
-.mod
-.o
-.txt
-.json
+*.mod
+*.o
+*.txt
+#*.json
 solveKS
 solveXpa
-calcirf
