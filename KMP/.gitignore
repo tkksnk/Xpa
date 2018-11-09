@@ -5,6 +5,7 @@
 *.eps
 #*.json
 .cache/
+m/
 solveKS
 solveXpa
 calcirf
