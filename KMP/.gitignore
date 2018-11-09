@@ -1,7 +1,10 @@
-.mod
-.o
-.txt
-#.json
+*.mod
+*.o
+*.txt
+*.csv
+*.eps
+#*.json
+.cache/
 solveKS
 solveXpa
 calcirf

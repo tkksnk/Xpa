@@ -181,3 +181,16 @@ if (priflag); print -depsc2 DHall_bench.eps; end;
 
 disp([mean(jsonKS.output.eptimein) mean(jsonKS.output.eptimeout) size(jsonKS.output.eptimeout,1) sum(jsonKS.output.eptimein)+sum(jsonKS.output.eptimeout)]);
 disp([mean(jsonXpa.output.eptimein) mean(jsonXpa.output.eptimeout) size(jsonXpa.output.eptimeout,1) sum(jsonXpa.output.eptimein)+sum(jsonXpa.output.eptimeout)]);
+
+[11.06265669  0.94051792  0.04897656  0.88511369]
+[11.06235819  0.9391175   0.04936251  0.88555691]
+[11.06721553  1.03328721  0.34264785]
+[ 0.11580618  0.88331998  3.63404863 12.65910948 82.70771572 19.2581517
+ 29.2371157  15.78997009]
+[ 0.78278043 -2.31790857]
+[11.06782983  1.03328721  0.34264443]
+[ 0.11588526  0.88391026  3.63591532 12.6631013  82.70118786 19.25868397
+ 29.23370142 15.78344641]
+[ 0.78272229 -2.27940205]
+[[[0.34043067]
+  [0.34454578]]

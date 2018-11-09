@@ -1,6 +1,9 @@
 *.mod
 *.o
 *.txt
+*.csv
+*.eps
 #*.json
+.cache/
 solveKS
 solveXpa

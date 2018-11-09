@@ -1,7 +1,7 @@
 function [mpvec0 pvec0 mpvec1 pvec1] = calcaccurat(json,simT,drop,nm,nz,GAMY,DELTA,fitflag)
 
 % load variables
-Eknotsm = json.input.knotsm;
+knotsm = json.input.knotsm;
 izvec = json.input.izvec;
 mpmat0 = json.output.mpmat0;
 pmat0 = json.output.pmat0;
@@ -18,8 +18,8 @@ for iz=1:nz
     end
 end
 
-[mpvec0 pvec0] = calcDH(knotsm,mpmat,pmat,izvec,Kvec,0);
-[mpvec1 pvec1] = calcDH(knotsm,mpmat,pmat,izvec,Kvec,1);
+[mpvec0 pvec0] = calcDH(knotsm,mpmat,pmat,izvec,Kvec,0); % for dynamic forecast
+[mpvec1 pvec1] = calcDH(knotsm,mpmat,pmat,izvec,Kvec,1); % for static forecast
 
 izvec = izvec(drop+1:simT+drop);
 Kvec = Kvec(drop+1:simT+drop);
