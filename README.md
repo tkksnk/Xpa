@@ -14,7 +14,7 @@ for the KS algorithm and
 $ make solveXpa
 $ ./solveXpa
 ```
-for the Xpa algorithm. The results in Fortran are saved in .json format and Matlab (>=R2016b) is needed to visualize them. Figures and Tables are displayed by running aggresults.m in each KT and KMP folder.
+for the Xpa algorithm. The results in Fortran are saved in .json format and Python3 with Anaconda (numpy, matplotlib, and statmodel) is needed to visualize them. Figures and Tables are displayed by running aggresults.py in each KT and KMP folder.
 
 ## Required libraries
 
