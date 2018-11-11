@@ -198,14 +198,14 @@ def calcaggstat(json,simT,drop,filename):
 ########################################
 # main part of the script
 ########################################
-# # for KMP calibration
-# jsonKS = json.load(open('./results_calibKMP_KS.json','r'));
-# jsonXpa = json.load(open('./results_calibKMP_Xpa.json','r'));
-# fname1 = "simall_KMP";
-# fname2 = "irfall_KMP";
-# fname3 = "DHall_KMP";
-# fname4 = "eptime_KMP";
-# # for KS calibration
+# for KMP calibration
+jsonKS = json.load(open('./results_calibKMP_KS.json','r'));
+jsonXpa = json.load(open('./results_calibKMP_Xpa.json','r'));
+fname1 = "simall_KMP";
+fname2 = "irfall_KMP";
+fname3 = "DHall_KMP";
+fname4 = "eptime_KMP";
+# for KS calibration
 # jsonKS = json.load(open('./results_calibKS_KS.json','r'));
 # jsonXpa = json.load(open('./results_calibKS_Xpa.json','r'));
 # fname1 = "simall_KS";
@@ -213,12 +213,12 @@ def calcaggstat(json,simT,drop,filename):
 # fname3 = "DHall_KS";
 # fname4 = "eptime_KS";
 # for hety calibration
-jsonKS = json.load(open('./results_calibhety_KS.json','r'));
-jsonXpa = json.load(open('./results_calibhety_Xpa.json','r'));
-fname1 = "simall_hety";
-fname2 = "irfall_hety";
-fname3 = "DHall_hety";
-fname4 = "eptime_hety";
+# jsonKS = json.load(open('./results_calibhety_KS.json','r'));
+# jsonXpa = json.load(open('./results_calibhety_Xpa.json','r'));
+# fname1 = "simall_hety";
+# fname2 = "irfall_hety";
+# fname3 = "DHall_hety";
+# fname4 = "eptime_hety";
 
 drop = jsonXpa["input"]["drop"];
 simT = jsonXpa["input"]["simT"];
@@ -289,7 +289,7 @@ time = np.linspace(st,ed,7);
 
 subplot(221);
 plot(time,100*np.log(Zirvec[st-1:ed]/Zirvec[st-2]),'r-');
-plot(np.array([st,ed]),np.array([0,0]),'k-');
+plot(np.array([st,ed]),np.array([0,0]),'k-',linewidth=1.0);
 title('TFP');
 ylabel('Percent');
 xlim(st,ed);
@@ -299,7 +299,7 @@ xticks([(st+1)+0,(st+1)+1,(st+1)+2,(st+1)+3,(st+1)+4,(st+1)+5],[0,1,2,3,4,5]); #
 subplot(222);
 plot(time,100*np.log(CirvecXpa[st-1:ed]/CirvecXpa[st-2]),'b-o',markerfacecolor='none',label='Xpa');
 plot(time,100*np.log(CirvecKS[st-1:ed]/CirvecKS[st-2]),'k-x',label='KS');
-plot(np.array([st,ed]),np.array([0,0]),'k-');
+plot(np.array([st,ed]),np.array([0,0]),'k-',linewidth=1.0);
 title('Consumption');
 ylabel('Percent');
 xlim(st,ed);
@@ -309,7 +309,7 @@ legend(loc="lower right", edgecolor="black");
 subplot(223);
 plot(time,100*np.log(YirvecXpa[st-1:ed]/YirvecXpa[st-2]),'b-o',markerfacecolor='none',label='Xpa');
 plot(time,100*np.log(YirvecKS[st-1:ed]/YirvecKS[st-2]),'k-x',label='KS');
-plot(np.array([st,ed]),np.array([0,0]),'k-');
+plot(np.array([st,ed]),np.array([0,0]),'k-',linewidth=1.0);
 title('Output');
 ylabel('Percent');
 xlim(st,ed);
@@ -319,7 +319,7 @@ xticks([(st+1)+0,(st+1)+1,(st+1)+2,(st+1)+3,(st+1)+4,(st+1)+5],[0,1,2,3,4,5]); #
 subplot(224);
 plot(time,100*np.log(IirvecXpa[st-1:ed]/IirvecXpa[st-2]),'b-o',markerfacecolor='none',label='Xpa');
 plot(time,100*np.log(IirvecKS[st-1:ed]/IirvecKS[st-2]),'k-x',label='KS');
-plot(np.array([st,ed]),np.array([0,0]),'k-');
+plot(np.array([st,ed]),np.array([0,0]),'k-',linewidth=1.0);
 title('Investment');
 ylabel('Percent');
 xlim(st,ed);

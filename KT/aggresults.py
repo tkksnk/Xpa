@@ -311,7 +311,7 @@ xlim(st,ed);
 xticks(np.array([st+1,st+10,st+20,st+30,st+40,st+50]),np.array([1,10,20,30,40,50]));
 
 subplots_adjust(wspace=0.4, hspace=0.4);
-subplots_adjust(left=0.1, right=0.95, bottom=0.1, top=0.95)
+# subplots_adjust(left=0.1, right=0.95, bottom=0.1, top=0.95)
 # show();
 savefig(fname1+'.eps', format='eps', dpi=600, bbox_inches='tight', pad_inches=0);
 
@@ -328,7 +328,7 @@ time = np.linspace(st,ed,22);
 subplot(231);
 plot(time,100*np.log(YirvecXpa[st-1:ed]/YirvecXpa[st-2]),'b-o',markerfacecolor='none',label='Xpa');
 plot(time,100*np.log(YirvecKS[st-1:ed]/YirvecKS[st-2]),'k-x',label='KS');
-plot(np.array([st,ed]),np.array([0,0]),'k-');
+plot(np.array([st,ed]),np.array([0,0]),'k-',linewidth=1.0);
 title('Output');
 ylabel('Percent');
 xlim(st,ed);
@@ -387,7 +387,7 @@ xlim(st,ed);
 xticks([(st+1)+0,(st+1)+5,(st+1)+10,(st+1)+15,(st+1)+20],[0,5,10,15,20]); # st is set to -1
 
 subplots_adjust(wspace=0.4, hspace=0.4);
-subplots_adjust(left=0.1, right=0.95, bottom=0.1, top=0.95)
+# subplots_adjust(left=0.1, right=0.95, bottom=0.1, top=0.95)
 # show();
 savefig(fname2+'.eps', format='eps', dpi=600, bbox_inches='tight', pad_inches=0);
 
@@ -447,9 +447,10 @@ xticks(np.array([st+1,st+10,st+20,st+30,st+40,st+50]),np.array([1,10,20,30,40,50
 # legend(loc="lower right", edgecolor="black");
 
 subplots_adjust(wspace=0.4, hspace=0.4);
-subplots_adjust(left=0.1, right=0.95, bottom=0.1, top=0.95)
+# subplots_adjust(left=0.1, right=0.95, bottom=0.1, top=0.95)
 # show();
-savefig(fname3+'.eps', format='eps', dpi=600, bbox_inches='tight', pad_inches=0);
+# savefig(fname3+'.eps', format='eps', dpi=600, bbox_inches='tight', pad_inches=0);
+savefig('DHall_extend.eps', format='eps', dpi=600, bbox_inches='tight', pad_inches=0);
 
 
 # elapsed time
