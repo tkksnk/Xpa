@@ -1,0 +1,10 @@
+*.mod
+*.o
+*.txt
+*.csv
+*.eps
+#*.json
+.cache/
+m/
+solveKS
+solveXpa
