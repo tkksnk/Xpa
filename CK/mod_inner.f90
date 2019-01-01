@@ -292,7 +292,7 @@ subroutine inner(agrid,mgrid,invTa,invTm,bgrid,xgrid,zgrid,pbij,pxij,pzij,ALOW,Y
 		lmat = lmatnew
 
         ! diagnosis
-        if (mod(iteration,1)==0) then
+        if (mod(iteration,diagnum)==0) then
             ! write(*,"('  iteration ', I4, '   ||TV-V|| = ', F8.5, ' max(W-N) = ', F8.5, ' min(W-N) = ', F8.5)") &
             ! iteration, distance, wnmax, wnmin
 			write(*,"('  iteration ', I4, '   ||TV-V|| = ', F10.8, '   sum|TV-V| = ', F10.8)") iteration, distance, distancemean

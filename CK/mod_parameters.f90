@@ -15,7 +15,7 @@ module mod_parameters
     ! real(8), parameter :: tolout = 1d-4     ! tolerance level for outer loop
     real(8), parameter :: tolmkt = 1d-5 !1d-6     ! tolerance level for market clearing in outerloop
     real(8), parameter :: dampss = 0.95d0  ! dampening weight for market clearing in stationary equilibrium (for old) note: values close to 0.5 (e.g., 0.7) lead to divergence
-    ! real(8), parameter :: dampout0 = 0.7d0  !0.7d0  ! dampening weight for outer loop (for old)
+    real(8), parameter :: dampout = 0.7d0  !0.7d0  ! dampening weight for outer loop (for old)
 
     integer, parameter :: transmat = 3      ! =0 iteration method without transition matrix
                                             ! =1 iteration method with transition matrix

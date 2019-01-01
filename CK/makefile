@@ -12,6 +12,9 @@ JSON=-I/home/takeki/lib/json-fortran/lib/intel/mod -L/home/takeki/lib/json-fortr
 solvess: mkl_spblas.o mod_parameters.o mod_randnumber.o mod_utils.o mod_spline_v4.o mod_policies_v4.o mod_calcss_v5.o solvess.o
 	$(FC) $(FFLAGS) $^ -o solvess /home/takeki/lib/libarpack.a $(JSON)
 
+solveKS: mkl_spblas.o mod_parameters.o mod_randnumber.o mod_utils.o mod_spline_v4.o mod_policies_v4.o mod_calcss_v5.o mod_inner.o mod_outer.o solveKS.o
+	$(FC) $(FFLAGS) $^ -o solveKS /home/takeki/lib/libarpack.a $(JSON)
+
 solveXpa: mkl_spblas.o mod_parameters.o mod_randnumber.o mod_utils.o mod_spline_v4.o mod_policies_v4.o mod_calcss_v5.o mod_inner.o mod_outer.o solveXpa.o
 	$(FC) $(FFLAGS) $^ -o solveXpa /home/takeki/lib/libarpack.a $(JSON)
 
