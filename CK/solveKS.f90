@@ -1,6 +1,6 @@
 ! Main program for "Implications of Government Transfers for Aggregate Labor Market Fluctuations"
 ! by Youngsoo Jang, Takeki Sunakawa and Minchul Yum
-! solveXpa.f90
+! solveKS.f90
 
 program solveXpa
 
@@ -71,10 +71,9 @@ program solveXpa
     call calcss(agrid,kgrid,bgrid,xgrid,pbij,pxij,mux,ALOW,idmat,1,0, &
 	        w,r,zagg,Lagg,Kagg,Tragg,mumat,ndist,Wmatss,Nmatss,minasset,Ls,Ks,EPratio,TrW5,EmpW5,stdlogwage,stdlogearn,rhoxest,error)
 
-    ! ! store the staionary distribution
+    ! store the staionary distribution
     Kss = Ks ! or Kagg
     Yss = zagg*Ks**ALPHA*Ls**(1.0d0-ALPHA)
-    ! mustationary = mumat
 
     ! set up the grid points
     mgrid = linspace((1.0d0-mpct)*Kss,(1.0d0+mpct)*Kss,nm)
@@ -95,13 +94,8 @@ program solveXpa
     invTa = inv(invTa)
     invTm = inv(invTm)
 
-    !***************************************!
-    !******* KRUSELL-SMITH ALGORITHM *******!
-    !***************************************!
     ! generate random numbers
     izvec = genizvec(simTT,pzij)
-    ! zvec = genzvec(simTT,RHOZ,SDINOVZ)
-    !
     ! initial value function and forecasting rules
     Vmat = 0.0d0
 
@@ -120,43 +114,36 @@ program solveXpa
         end do
 
     end if
-    !
-    ! ! loading previous results
-    ! if (vmatini0==1) call readwriteVmat(Vmat,1)
-    ! if (fcstini0==1) call readwritekappa(kappakp,kappaw,kappar,kappal,ckappakp,ckappaw,ckappar,ckappal,conzflag,1) ! read
-    !
-    !
+
+    ! loading previous results
+    if (vmatini0==1) call readwriteVmat(Vmat,1)
+    if (fcstini0==1) call readwritekappa(kappakp,kappaw,kappar,kappal,ckappakp,ckappaw,ckappar,ckappal,conzflag,1) ! read
+
+
     !******* MAIN LOOP *******!
     diffout = 1d+4
     iterout = 1
-    ! damp = dampout0
-    ! bspct = bspct0
-    !
+
     ! if (outermkt==1) foreind = 1  ! =1 flag for market clearing
     !
-	! ! 25 May 2018: do while is replaced with do and if exit
+	! 25 May 2018: do while is replaced with do and if exit
     do while (diffout>tolout)
-	! do
-    ! ! do iterout=1,3
     !
     !     ! NOTE: 030418 BE CAREFUL when use integer as a flag in if clause.  Need to specify value and use parenthesis (with .and., .or.)
     !
-    !     !if ((iterout>1) .or. (vmatini0==0)) then
-	! 	!if (vmatini0==0) then
-        call inner(agrid,mgrid,invTa,invTm,bgrid,xgrid,zgrid,pbij,pxij,pzij,ALOW,Yss,idmat, &
-            kappakp,kappaw,kappar,Vmat,Wmat,Nmat,apmat,awpmat,anpmat,lmat)
-    !
-    !         call readwriteVmat(Vmat,0) ! write
-    !     !end if
-    !
+        if ((iterout>1) .or. (vmatini0==0)) then
+		! if (vmatini0==0) then
+            call inner(agrid,mgrid,invTa,invTm,bgrid,xgrid,zgrid,pbij,pxij,pzij,ALOW,Yss,idmat, &
+                kappakp,kappaw,kappar,Vmat,Wmat,Nmat,apmat,awpmat,anpmat,lmat,iterout)
+
+            call readwriteVmat(Vmat,0) ! write
+        end if
+
         call outer(agrid,kgrid,mgrid,invTa,invTm,bgrid,xgrid,zgrid,pbij,pxij,pzij,simTT,izvec,ALOW,Yss,idmat, &
             kappakp,kappaw,kappar,Vmat,aggsim,mumat)
-        ! call outer(agrid,kgrid,mgrid,invTa,invTm,bgrid,xgrid,zgrid,pbij,pxij,pzij,simTT,izvec,zvec,idmat,Yss, &
-        !     kappakp,kappaw,kappar,xghz,wghz,RHOZ,conzflag,Vmat,ALPHA,DELTA,HBAR,ALOW,B0,BETA,taul,wgtT,a0,a1,a2,Trscale,Transprog,T0, &
-        !     tol,tolmkt,outermkt,foreind,bsctr,bspct,maxcountmkt,calcma,bsfixr,diagnumout,fcsteqn,linflag,ymat,mumat)
-    !
+
         call calcforecast(drop,izvec,zgrid,aggsim,DELTA,kappakpnew,kappawnew,kapparnew,kappalnew,rsquared,conzflag)
-    !
+
         diffkp = maxval(maxval(abs(kappakpnew-kappakp),1),1)
         diffw = maxval(maxval(abs(kappawnew-kappaw),1),1)
         diffr = maxval(maxval(abs(kapparnew-kappar),1),1)
@@ -203,47 +190,6 @@ program solveXpa
     !
     !     end if
     !
-    !     ! store the simulated time series and forecasting rules
-    !     open(300, file="izvec.txt")
-    !     open(310, file="mvec.txt")
-    !     open(320, file="wvec.txt")
-    !     open(330, file="rvec.txt")
-    !     open(340, file="yvec.txt")
-    !     open(350, file="cvec.txt")
-    !     open(360, file="xvec.txt")
-    !     open(370, file="lvec.txt")
-    !     open(380, file="hvec.txt")
-    !     open(390, file="zvec.txt")
-    !     open(400, file="trvec.txt")
-    !
-    !     do time = 1,simT
-    !
-    !         write(300,*) izvec(time+drop)
-    !         write(310,*) ymat(time+drop,1)
-    !         write(320,*) ymat(time+drop,2)
-    !         write(330,*) ymat(time+drop,3)
-    !         write(340,*) ymat(time+drop,4)
-    !         write(350,*) ymat(time+drop,5)
-    !         write(360,*) ymat(time+drop,6)
-    !         write(370,*) ymat(time+drop,7)
-    !         write(380,*) ymat(time+drop,8)
-    !         write(390,*) ymat(time+drop,9)
-    !         write(400,*) ymat(time+drop,10)
-    !
-    !     end do
-    !
-    !     close(300)
-    !     close(310)
-    !     close(320)
-    !     close(330)
-    !     close(340)
-    !     close(350)
-    !     close(360)
-    !     close(370)
-    !     close(380)
-    !     close(390)
-    !     close(400)
-    !
 	! 	if (.NOT. diffout>tolout) exit
     !
         kappakp = (1.0d0-dampout)*kappakpnew + dampout*kappakp
@@ -252,16 +198,16 @@ program solveXpa
     !     kappal  = (1.0d0-damp)*kappalnew  + damp*kappal
     !
 	! 	! 24 May 2018 Note : saved forecasting rule should not be the updated one (at the final convergence)
-	! 	call readwritekappa(kappakp,kappaw,kappar,kappal,ckappakp,ckappaw,ckappar,ckappal,conzflag,0) ! write
+		call readwritekappa(kappakp,kappaw,kappar,kappal,ckappakp,ckappaw,ckappar,ckappal,conzflag,0) ! write
     !
 		iterout = iterout + 1
 
     end do
-    !
-    !
-    ! call system_clock(cto2, cro)
-    ! eptimeo = (dble(cto2-cto1)/cro)/60.0d0
-    ! write(*,"('  Total Elasped time (minutes) = ', F10.2)") eptimeo
+
+
+    call system_clock(cto2, cro)
+    eptimeo = (dble(cto2-cto1)/cro)/60.0d0
+    write(*,"('  Total Elasped time (minutes) = ', F10.2)") eptimeo
 
     ! the i/o of data will be replaced by json
     ! output via json

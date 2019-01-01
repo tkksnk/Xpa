@@ -6,7 +6,7 @@ module mod_parameters
     integer, parameter :: maxiter = 2000    ! the maximum number of value function iterations in innerloop
     integer, parameter :: diagnum = 500     ! display result in every diagnum interval (innerloop)
     integer, parameter :: diagnumout = 500  ! display result in every diagnum interval (outerloop)
-    character(len=*), parameter :: jsonfilename = './results_CKnx17na51nk501.json'
+    character(len=*), parameter :: jsonfilename = './results_CKnotr_KS.json'
     logical, parameter :: jsonoutput = .true.
 
     real(8), parameter :: tolout = 1d-4      ! tolerance level for market clearing in steady state
@@ -42,17 +42,17 @@ module mod_parameters
     integer, parameter :: bsfixr = 0        ! =1 fix r (w if bsctr=1) while updating w in market clearing
     real(8), parameter :: bspct = 0.01d0    ! initial range for bisection (the previous error is used after time 2)
 
-    ! ! for the initial guess of the value function in the inner loop
+    ! for the initial guess of the value function in the inner loop
     ! integer, parameter :: ssini0 = 0        ! =1 reading the previous steady state results
-    ! integer, parameter :: vmatini = 1       ! =1 using the one in the previous iteration (used in innerloop)
-    ! integer, parameter :: vmatini0 = 0      ! =1 using the one saved in Vmat.txt for the first iteration
+    integer, parameter :: vmatini = 1       ! =1 using the one in the previous iteration (used in innerloop)
+    integer, parameter :: vmatini0 = 0      ! =1 using the one saved in Vmat.txt for the first iteration
     ! ! for the initial guess of the forecasting rules in the outer loop
     ! ! NOTE: 030318 The variable name below is changed
-    ! integer, parameter :: fcstini0 = 1      ! =1 reading the forecasting rules in the files below
-    ! character(40) :: ckappakp = "./kappakp.txt"
-    ! character(40) :: ckappaw  = "./kappaw.txt"
-    ! character(40) :: ckappar  = "./kappar.txt"
-    ! character(40) :: ckappal  = "./kappal.txt"
+    integer, parameter :: fcstini0 = 0      ! =1 reading the forecasting rules in the files below
+    character(40) :: ckappakp = "./kappakp.txt"
+    character(40) :: ckappaw  = "./kappaw.txt"
+    character(40) :: ckappar  = "./kappar.txt"
+    character(40) :: ckappal  = "./kappal.txt"
     ! forecasting rules chosen to be estimated
     integer, parameter :: fcsteqn = 1
     ! =1: kappakp and kappaw (kappar is obtained by the firm's FOC)
@@ -75,8 +75,8 @@ module mod_parameters
     !******* the number of grid points and the length of simulation *******!
     integer, parameter :: nb = 1
     integer, parameter :: ne = nb*nx
-    integer, parameter :: na = 51 !50 !100 !200             ! for value functions and policy functions
-    integer, parameter :: nk = 501 !500 !1000 !2000            ! for distributions
+    integer, parameter :: na = 50 !50 !100 !200             ! for value functions and policy functions
+    integer, parameter :: nk = 500 !500 !1000 !2000            ! for distributions
     integer, parameter :: nm = 7
     real(8), parameter :: mpct = 0.15d0        ! percent range of aggregate capital
     integer, parameter :: ra = na-2

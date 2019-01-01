@@ -14,12 +14,12 @@ contains
 
 
 subroutine inner(agrid,mgrid,invTa,invTm,bgrid,xgrid,zgrid,pbij,pxij,pzij,ALOW,Yagg,idmat, &
-	kappakp,kappaw,kappar,Vmat,Wmat,Nmat,apmat,awpmat,anpmat,lmat)
+	kappakp,kappaw,kappar,Vmat,Wmat,Nmat,apmat,awpmat,anpmat,lmat,iterout)
 
 
 	real(8), intent(in) :: agrid(:), mgrid(:), invTa(:,:), invTm(:,:), bgrid(:), xgrid(:), zgrid(:), &
 		pbij(:,:), pxij(:,:), pzij(:,:), ALOW, Yagg, kappakp(:,:), kappaw(:,:), kappar(:,:)
-	integer, intent(in) :: idmat(:,:)
+	integer, intent(in) :: idmat(:,:), iterout
 	real(8), intent(inout) :: Vmat(:,:,:,:)
 	real(8), intent(out) :: Wmat(:,:,:,:), Nmat(:,:,:,:)
 	real(8), intent(out) :: apmat(:,:,:,:), awpmat(:,:,:,:), anpmat(:,:,:,:), lmat(:,:,:,:)
@@ -50,9 +50,9 @@ subroutine inner(agrid,mgrid,invTa,invTm,bgrid,xgrid,zgrid,pbij,pxij,pzij,ALOW,Y
 	call system_clock(ct1, cr)
 
 	! initial guess for the value function
-	!if ((vmatini==0) .or. (iterout==1)) then
+	if ((vmatini==0) .or. (iterout==1)) then
     	Vmat = 0.0d0
-	!end if
+	end if
 
 	damp = 0.0d0
 	dampflag = 0
