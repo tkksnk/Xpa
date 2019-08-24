@@ -1,5 +1,7 @@
 # Programming code for "Applying the Explicit Aggregation Algorithm to Heterogeneous Macro Models"
-Forthcoming in Computational Economics
+Forthcoming in *Computational Economics*
+
+https://doi.org/10.1007/s10614-019-09914-x
 
 by Takeki Sunakawa (takeki.sunakawa@gmail.com)
 
